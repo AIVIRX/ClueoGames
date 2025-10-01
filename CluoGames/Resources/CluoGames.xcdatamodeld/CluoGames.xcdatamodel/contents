@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="25A354" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="PuzzleResult" representedClassName="PuzzleResult" syncable="YES" codeGenerationType="class">
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="isPerfect" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="mistakes" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="puzzleId" optional="YES" attributeType="String"/>
+        <attribute name="puzzleType" optional="YES" attributeType="String"/>
+        <attribute name="streak" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="timeToSolve" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="UserProgress" representedClassName="UserProgress" syncable="YES" codeGenerationType="class">
+        <attribute name="currentStreak" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="lastPlayDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="longestStreak" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="totalPuzzlesSolved" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+</model>

@@ -1,0 +1,207 @@
+[
+  {
+    "id": "connections-2024-01-01",
+    "date": "2024-01-01T00:00:00Z",
+    "difficulty": "medium",
+    "isSolved": false,
+    "timeToSolve": null,
+    "mistakes": 0,
+    "words": ["APPLE", "BANANA", "ORANGE", "GRAPE", "CAR", "TRUCK", "BIKE", "BUS", "RED", "BLUE", "GREEN", "YELLOW", "DOG", "CAT", "BIRD", "FISH"],
+    "groups": [
+      {
+        "id": "fruits",
+        "words": ["APPLE", "BANANA", "ORANGE", "GRAPE"],
+        "category": "Fruits",
+        "difficulty": 1,
+        "color": "#FF6B6B"
+      },
+      {
+        "id": "vehicles",
+        "words": ["CAR", "TRUCK", "BIKE", "BUS"],
+        "category": "Vehicles",
+        "difficulty": 2,
+        "color": "#4ECDC4"
+      },
+      {
+        "id": "colors",
+        "words": ["RED", "BLUE", "GREEN", "YELLOW"],
+        "category": "Colors",
+        "difficulty": 3,
+        "color": "#45B7D1"
+      },
+      {
+        "id": "animals",
+        "words": ["DOG", "CAT", "BIRD", "FISH"],
+        "category": "Animals",
+        "difficulty": 4,
+        "color": "#96CEB4"
+      }
+    ],
+    "title": "New Year Connections",
+    "description": "Group the words into 4 categories of 4"
+  },
+  {
+    "id": "connections-2024-01-02",
+    "date": "2024-01-02T00:00:00Z",
+    "difficulty": "easy",
+    "isSolved": false,
+    "timeToSolve": null,
+    "mistakes": 0,
+    "words": ["SUN", "MOON", "STAR", "PLANET", "PEN", "PENCIL", "MARKER", "CRAYON", "PIZZA", "BURGER", "TACO", "SANDWICH", "BOOK", "MAGAZINE", "NEWSPAPER", "COMIC"],
+    "groups": [
+      {
+        "id": "celestial",
+        "words": ["SUN", "MOON", "STAR", "PLANET"],
+        "category": "Celestial Bodies",
+        "difficulty": 1,
+        "color": "#FFD93D"
+      },
+      {
+        "id": "writing",
+        "words": ["PEN", "PENCIL", "MARKER", "CRAYON"],
+        "category": "Writing Tools",
+        "difficulty": 2,
+        "color": "#6BCF7F"
+      },
+      {
+        "id": "food",
+        "words": ["PIZZA", "BURGER", "TACO", "SANDWICH"],
+        "category": "Fast Food",
+        "difficulty": 3,
+        "color": "#FF8A80"
+      },
+      {
+        "id": "reading",
+        "words": ["BOOK", "MAGAZINE", "NEWSPAPER", "COMIC"],
+        "category": "Reading Materials",
+        "difficulty": 4,
+        "color": "#A78BFA"
+      }
+    ],
+    "title": "Daily Connections",
+    "description": "Group the words into 4 categories of 4"
+  },
+  {
+    "id": "connections-2024-01-03",
+    "date": "2024-01-03T00:00:00Z",
+    "difficulty": "hard",
+    "isSolved": false,
+    "timeToSolve": null,
+    "mistakes": 0,
+    "words": ["BASS", "TREBLE", "ALTO", "TENOR", "ROSE", "TULIP", "DAISY", "LILY", "KING", "QUEEN", "PRINCE", "PRINCESS", "SPRING", "SUMMER", "FALL", "WINTER"],
+    "groups": [
+      {
+        "id": "voices",
+        "words": ["BASS", "TREBLE", "ALTO", "TENOR"],
+        "category": "Voice Types",
+        "difficulty": 1,
+        "color": "#FF6B6B"
+      },
+      {
+        "id": "flowers",
+        "words": ["ROSE", "TULIP", "DAISY", "LILY"],
+        "category": "Flowers",
+        "difficulty": 2,
+        "color": "#FFB3BA"
+      },
+      {
+        "id": "royalty",
+        "words": ["KING", "QUEEN", "PRINCE", "PRINCESS"],
+        "category": "Royal Titles",
+        "difficulty": 3,
+        "color": "#FFDFBA"
+      },
+      {
+        "id": "seasons",
+        "words": ["SPRING", "SUMMER", "FALL", "WINTER"],
+        "category": "Seasons",
+        "difficulty": 4,
+        "color": "#BAFFC9"
+      }
+    ],
+    "title": "Daily Connections",
+    "description": "Group the words into 4 categories of 4"
+  },
+  {
+    "id": "connections-2024-01-04",
+    "date": "2024-01-04T00:00:00Z",
+    "difficulty": "medium",
+    "isSolved": false,
+    "timeToSolve": null,
+    "mistakes": 0,
+    "words": ["GOLF", "TENNIS", "SOCCER", "HOCKEY", "PENNY", "NICKEL", "DIME", "QUARTER", "NORTH", "SOUTH", "EAST", "WEST", "MORNING", "AFTERNOON", "EVENING", "NIGHT"],
+    "groups": [
+      {
+        "id": "sports",
+        "words": ["GOLF", "TENNIS", "SOCCER", "HOCKEY"],
+        "category": "Sports",
+        "difficulty": 1,
+        "color": "#4ECDC4"
+      },
+      {
+        "id": "coins",
+        "words": ["PENNY", "NICKEL", "DIME", "QUARTER"],
+        "category": "US Coins",
+        "difficulty": 2,
+        "color": "#FFE66D"
+      },
+      {
+        "id": "directions",
+        "words": ["NORTH", "SOUTH", "EAST", "WEST"],
+        "category": "Cardinal Directions",
+        "difficulty": 3,
+        "color": "#95E1D3"
+      },
+      {
+        "id": "times",
+        "words": ["MORNING", "AFTERNOON", "EVENING", "NIGHT"],
+        "category": "Times of Day",
+        "difficulty": 4,
+        "color": "#F38BA8"
+      }
+    ],
+    "title": "Daily Connections",
+    "description": "Group the words into 4 categories of 4"
+  },
+  {
+    "id": "connections-2024-01-05",
+    "date": "2024-01-05T00:00:00Z",
+    "difficulty": "easy",
+    "isSolved": false,
+    "timeToSolve": null,
+    "mistakes": 0,
+    "words": ["MILK", "JUICE", "WATER", "SODA", "CHAIR", "TABLE", "DESK", "STOOL", "HAT", "SHIRT", "PANTS", "SHOES", "PHONE", "LAPTOP", "TABLET", "WATCH"],
+    "groups": [
+      {
+        "id": "drinks",
+        "words": ["MILK", "JUICE", "WATER", "SODA"],
+        "category": "Beverages",
+        "difficulty": 1,
+        "color": "#87CEEB"
+      },
+      {
+        "id": "furniture",
+        "words": ["CHAIR", "TABLE", "DESK", "STOOL"],
+        "category": "Furniture",
+        "difficulty": 2,
+        "color": "#D2B48C"
+      },
+      {
+        "id": "clothing",
+        "words": ["HAT", "SHIRT", "PANTS", "SHOES"],
+        "category": "Clothing",
+        "difficulty": 3,
+        "color": "#FFB6C1"
+      },
+      {
+        "id": "electronics",
+        "words": ["PHONE", "LAPTOP", "TABLET", "WATCH"],
+        "category": "Electronic Devices",
+        "difficulty": 4,
+        "color": "#DDA0DD"
+      }
+    ],
+    "title": "Daily Connections",
+    "description": "Group the words into 4 categories of 4"
+  }
+]
