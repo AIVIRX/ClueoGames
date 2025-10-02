@@ -134,21 +134,24 @@ struct DifficultyButton: View {
                 
                 Text(title)
                     .font(.headline)
-                    .foregroundColor(isDisabled ? .gray : .primary)
+                    .fontWeight(isCompleted ? .bold : .regular)
+                    .foregroundColor(isCompleted ? .green : (isDisabled ? .gray : .primary))
                 
                 if isCompleted {
                     Text("Completed")
                         .font(.caption)
-                        .foregroundColor(.green)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(Color.green.opacity(0.2))
+                        .background(Color.green)
                         .cornerRadius(8)
+                        .shadow(color: .black.opacity(0.2), radius: 1, x: 0, y: 1)
                 }
             }
             .frame(maxWidth: .infinity)
             .padding()
-            .background(isCompleted ? Color.green.opacity(0.1) : (isDisabled ? Color.gray.opacity(0.1) : Color(.systemBackground)))
+            .background(isCompleted ? Color.green.opacity(0.2) : (isDisabled ? Color.gray.opacity(0.1) : Color(.systemBackground)))
             .cornerRadius(12)
             .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
         }

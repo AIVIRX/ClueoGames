@@ -26,12 +26,20 @@ struct SudokuGameView: View {
     private let seed: String
     private let difficulty: SudokuDifficulty
     private let onComplete: (() -> Void)?
+    @State private var isCompleted: Bool = false
     
     init(seed: String, difficulty: SudokuDifficulty, onComplete: (() -> Void)? = nil) {
         self.seed = seed
         self.difficulty = difficulty
         self.onComplete = onComplete
         _viewModel = StateObject(wrappedValue: SudokuViewModel(seed: seed, difficulty: difficulty))
+    }
+    
+    init(puzzle: SudokuGrid, solution: SudokuGrid, difficulty: SudokuDifficulty, onComplete: (() -> Void)? = nil) {
+        self.seed = ""
+        self.difficulty = difficulty
+        self.onComplete = onComplete
+        _viewModel = StateObject(wrappedValue: SudokuViewModel(puzzle: puzzle, solution: solution))
     }
     
     @State private var startTime = Date()
@@ -52,6 +60,7 @@ struct SudokuGameView: View {
                 
                 // Number Pad
                 numberPad
+                    .disabled(isCompleted)
             }
             .padding(3)
             .navigationTitle("Sudoku")
@@ -62,6 +71,17 @@ struct SudokuGameView: View {
                         Image(systemName: "gearshape")
                             .font(.system(size: 18, weight: .medium))
                     }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Menu {
+                        Button("Reveal all") {
+                            viewModel.revealAll()
+                        }
+                    } label: {
+                        Image(systemName: "lightbulb")
+                            .font(.system(size: 18, weight: .medium))
+                    }
+                    .disabled(isCompleted)
                 }
             }
             .preferredColorScheme(selectedColorScheme.colorScheme)
@@ -77,14 +97,17 @@ struct SudokuGameView: View {
         .onDisappear {
             stopTimer()
         }
-        .onChange(of: viewModel.grid) { _ in
+        .onChange(of: viewModel.grid) { _, _ in
             checkForCompletion()
         }
-        .onChange(of: showConflicts) { _ in
+        .onChange(of: showConflicts) { _, _ in
             saveSettings()
         }
-        .onChange(of: selectedColorScheme) { _ in
+        .onChange(of: selectedColorScheme) { _, _ in
             saveSettings()
+        }
+        .sheet(isPresented: $isCompleted) {
+            completionSheet
         }
     }
     
@@ -172,7 +195,9 @@ struct SudokuGameView: View {
     private func checkForCompletion() {
         // Check if all cells are filled and valid
         let isComplete = isBoardComplete()
-        if isComplete {
+        if isComplete && !isCompleted {
+            isCompleted = true
+            stopTimer()
             onComplete?()
         }
     }
@@ -250,6 +275,7 @@ struct SudokuGameView: View {
                 }
             }
         }
+        .allowsHitTesting(!isCompleted)
     }
     
     private func renderOverlayLines(width: CGFloat) -> some View {
@@ -473,6 +499,41 @@ struct SudokuGameView: View {
                     }
                 }
             }
+        }
+    }
+
+    private var completionSheet: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                Spacer()
+                ZStack {
+                    Circle()
+                        .fill(Color.green.opacity(0.2))
+                        .frame(width: 120, height: 120)
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 50, weight: .bold))
+                        .foregroundColor(.green)
+                }
+                Text("Sudoku Complete!")
+                    .font(.title)
+                    .fontWeight(.bold)
+                Text("Time: \(formatTime(elapsedTime))")
+                    .font(.title3)
+                    .foregroundColor(.secondary)
+                Button(action: { isCompleted = false }) {
+                    Text("Done")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .cornerRadius(12)
+                }
+                Spacer()
+            }
+            .padding()
+            .navigationTitle("Great Job!")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

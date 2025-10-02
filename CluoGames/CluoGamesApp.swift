@@ -21,7 +21,7 @@ struct CluoGamesApp: App {
     private func setupApp() {
         // Request notification permissions
         Task {
-            await NotificationService.shared.requestPermission()
+            _ = await NotificationService.shared.requestPermission()
             await GameCenterService.shared.authenticate()
         }
         

@@ -37,7 +37,7 @@ class NotificationService: NotificationServiceProtocol {
     func scheduleDailyReminder(at hour: Int, minute: Int) {
         let content = UNMutableNotificationContent()
         content.title = "New Puzzle Available! 🧩"
-        content.body = "Your daily Clueo Games puzzle is ready to solve!"
+        content.body = "Your daily Clueo Games puzzles are ready to be solved!"
         content.sound = .default
         content.badge = 1
         

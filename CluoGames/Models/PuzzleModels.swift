@@ -32,6 +32,7 @@ enum PuzzleDifficulty: String, CaseIterable, Codable {
     }
 }
 
+
 // MARK: - Connections Puzzle
 struct ConnectionsPuzzle: Puzzle {
     let id: String
@@ -59,46 +60,7 @@ struct ConnectionsPuzzle: Puzzle {
     }
 }
 
-// MARK: - Crossword Puzzle
-struct CrosswordPuzzle: Puzzle {
-    let id: String
-    let date: Date
-    let difficulty: PuzzleDifficulty
-    var isSolved: Bool = false
-    var timeToSolve: TimeInterval?
-    var mistakes: Int = 0
-    
-    let grid: [[CrosswordCell]]
-    let clues: [CrosswordClue]
-    let title: String
-    
-    struct CrosswordCell: Codable {
-        let letter: String?
-        let isBlocked: Bool
-        let number: Int?
-        let isAcross: Bool
-        let isDown: Bool
-        
-        var isEmpty: Bool {
-            return letter == nil && !isBlocked
-        }
-    }
-    
-    struct CrosswordClue: Codable, Identifiable {
-        let id: String
-        let number: Int
-        let text: String
-        let answer: String
-        let direction: ClueDirection
-        let startRow: Int
-        let startCol: Int
-        
-        enum ClueDirection: String, Codable {
-            case across = "across"
-            case down = "down"
-        }
-    }
-}
+// Crossword puzzle models removed - placeholder only
 
 // MARK: - Game State
 enum GameState {

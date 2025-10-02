@@ -31,30 +31,41 @@ struct HomeView: View {
                         )
                     }
                     
+                        NavigationLink {
+                            PastSudokuView()
+                        } label: {
+                            SmallActionButtonView(title: "Past Sudoku", systemImage: "archivebox.fill", color: .yellow)
+                        }
+                                        
                     GameHeroCard(
                         title: "The Crossword",
-                        subtitle: "Subscribe to unlock daily\npuzzles and the archive.",
-                        dateText: "Sunday, Sep 28",
+                        subtitle: "Coming Soon!\nCrossword puzzles will be available soon.",
+                        dateText: "Soon",
                         icon: "questionmark.square.fill",
                         tint: Color(.systemBlue),
-                        isLocked: false,
+                        isLocked: true,
                         height: 220
                     )
                     
-                    HStack(spacing: 16) {
-                        SmallActionButton(title: "Packs", systemImage: "square.stack.3d.up.fill") {}
-                        SmallActionButton(title: "Archive", systemImage: "archivebox.fill") {}
+                    NavigationLink {
+                        ExactoModeSelectionView()
+                    } label: {
+                        GameHeroCard(
+                            title: "Exacto",
+                            subtitle: "Use six numbers and multiplication to match the target",
+                            dateText: "Today",
+                            icon: "equal",
+                            tint: Color(.systemPink),
+                            isLocked: false,
+                            height: 200
+                        )
                     }
                     
-                    GameHeroCard(
-                        title: "Unscramble",
-                        subtitle: "Fit all dominos within the board.",
-                        dateText: "Saturday, Sep 27",
-                        icon: "die.face.5.fill",
-                        tint: Color(.systemPink),
-                        isLocked: false,
-                        height: 200
-                    )
+                        NavigationLink {
+                            PastExactoView()
+                        } label: {
+                            SmallActionButtonView(title: "Past Exacto", systemImage: "archivebox.fill", color: .pink)
+                        }
                     
                 }
                 .padding(.horizontal)
@@ -73,16 +84,15 @@ struct HomeView: View {
     
     private var welcomeHeader: some View {
         VStack(alignment: .center, spacing: 12) {
-            Text("Welcome!")
-                .font(.largeTitle).bold()
-            Text("Play with no ads and access unlimited puzzles")
+            Text("Play with no ads and access past puzzles")
                 .foregroundColor(.secondary)
             Button(action: {}) {
                 Text("Subscribe to Games")
                     .fontWeight(.semibold)
+                    .foregroundColor(.white)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 10)
-                    .background(Color(.systemGray6))
+                    .background(Color.blue)
                     .cornerRadius(24)
             }
         }
@@ -94,28 +104,121 @@ struct HomeView: View {
 struct SmallActionButton: View {
     let title: String
     let systemImage: String
+    let color: Color
     var action: () -> Void
     
-    init(title: String, systemImage: String, action: @escaping () -> Void) {
+    init(title: String, systemImage: String, color: Color = .blue, action: @escaping () -> Void) {
         self.title = title
         self.systemImage = systemImage
+        self.color = color
         self.action = action
     }
     
     var body: some View {
         Button(action: action) {
-            HStack { Text(title).font(.headline); Spacer(); Image(systemName: systemImage) }
-                .foregroundColor(.primary)
+            ZStack(alignment: .topLeading) {
+                // Back layers (stacked cards)
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(color.opacity(0.3))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                    )
+                    .offset(y: 10)
+                    .shadow(color: .black.opacity(0.03), radius: 2, x: 0, y: 1)
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(color.opacity(0.6))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                    )
+                    .offset(y: 5)
+                    .shadow(color: .black.opacity(0.04), radius: 2, x: 0, y: 1)
+                // Front content card
+                HStack {
+                    Text(title).font(.headline)
+                    Spacer()
+                    Image(systemName: systemImage)
+                }
+                .foregroundColor(.white)
                 .padding()
                 .frame(maxWidth: .infinity)
-                .background(Color(.systemBackground))
+                .background(color)
                 .cornerRadius(16)
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color(.separator).opacity(0.15), lineWidth: 1)
+                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
                 )
                 .shadow(color: .black.opacity(0.06), radius: 3, x: 0, y: 2)
+            }
+            .frame(maxWidth: .infinity)
         }
+        .padding(.bottom)
+    }
+}
+
+struct SmallActionButtonView: View {
+    let title: String
+    let systemImage: String
+    let color: Color
+    
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            // Back layers (stacked cards)
+            RoundedRectangle(cornerRadius: 16)
+                .fill(color.opacity(0.3))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                )
+                .offset(y: 10)
+                .shadow(color: .black.opacity(0.03), radius: 2, x: 0, y: 1)
+            RoundedRectangle(cornerRadius: 16)
+                .fill(color.opacity(0.6))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                )
+                .offset(y: 5)
+                .shadow(color: .black.opacity(0.04), radius: 2, x: 0, y: 1)
+            // Front content card
+            HStack {
+                Text(title).font(.headline)
+                Spacer()
+                Image(systemName: systemImage)
+            }
+            .foregroundColor(.white)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(color)
+            .cornerRadius(16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(0.06), radius: 3, x: 0, y: 2)
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+extension View {
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape(RoundedCorner(radius: radius, corners: corners))
+    }
+}
+
+struct RoundedCorner: Shape {
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(
+            roundedRect: rect,
+            byRoundingCorners: corners,
+            cornerRadii: CGSize(width: radius, height: radius)
+        )
+        return Path(path.cgPath)
     }
 }
 

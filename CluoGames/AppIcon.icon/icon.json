@@ -1,0 +1,50 @@
+{
+  "fill" : {
+    "solid" : "display-p3:0.68116,0.68087,1.00000,1.00000"
+  },
+  "groups" : [
+    {
+      "blur-material" : null,
+      "layers" : [
+        {
+          "blend-mode" : "normal",
+          "glass" : true,
+          "hidden" : false,
+          "image-name" : "Artboard 1.png",
+          "name" : "Artboard 1"
+        }
+      ],
+      "shadow" : {
+        "kind" : "layer-color",
+        "opacity" : 0.5
+      },
+      "specular" : true,
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.5
+      }
+    },
+    {
+      "blur-material" : null,
+      "layers" : [
+        {
+          "glass" : true,
+          "image-name" : "Artboard 2.png",
+          "name" : "Artboard 2"
+        }
+      ],
+      "shadow" : {
+        "kind" : "layer-color",
+        "opacity" : 0.5
+      },
+      "specular" : false,
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.2
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "squares" : "shared"
+  }
+}

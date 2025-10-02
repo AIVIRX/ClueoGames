@@ -12,7 +12,6 @@ import Combine
 protocol PuzzleServiceProtocol {
     func getTodaysPuzzle() async throws -> ConnectionsPuzzle
     func getPuzzle(for date: Date) async throws -> ConnectionsPuzzle?
-    func getCrosswordPuzzle(for date: Date) async throws -> CrosswordPuzzle?
     func markPuzzleAsSolved(_ puzzle: any Puzzle, timeToSolve: TimeInterval, mistakes: Int)
     func canAccessPuzzle(for date: Date) -> Bool
 }
@@ -39,11 +38,6 @@ class PuzzleService: PuzzleServiceProtocol, ObservableObject {
         // In a real app, this would fetch from a server or local database
         // For now, we'll use bundled JSON data
         return try await loadPuzzleFromBundle(for: date)
-    }
-    
-    func getCrosswordPuzzle(for date: Date) async throws -> CrosswordPuzzle? {
-        // Similar implementation for crossword puzzles
-        return try await loadCrosswordPuzzleFromBundle(for: date)
     }
     
     func markPuzzleAsSolved(_ puzzle: any Puzzle, timeToSolve: TimeInterval, mistakes: Int) {
@@ -86,20 +80,6 @@ class PuzzleService: PuzzleServiceProtocol, ObservableObject {
         }
     }
     
-    private func loadCrosswordPuzzleFromBundle(for date: Date) async throws -> CrosswordPuzzle? {
-        // Similar implementation for crossword puzzles
-        guard let url = Bundle.main.url(forResource: "crossword_puzzles", withExtension: "json"),
-              let data = try? Data(contentsOf: url) else {
-            return nil
-        }
-        
-        let puzzles = try JSONDecoder().decode([CrosswordPuzzle].self, from: data)
-        let dateString = DateFormatter.puzzleDate.string(from: date)
-        
-        return puzzles.first { puzzle in
-            DateFormatter.puzzleDate.string(from: puzzle.date) == dateString
-        }
-    }
     
     private func generateDefaultPuzzle() -> ConnectionsPuzzle {
         // Fallback puzzle if no data is available

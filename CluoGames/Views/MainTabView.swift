@@ -15,15 +15,10 @@ struct MainTabView: View {
                     Image(systemName: "house.fill")
                     Text("Games")
                 }
-            FriendsView()
+            CombinedProfileView()
                 .tabItem {
-                    Image(systemName: "person.2.fill")
-                    Text("Friends")
-                }
-            MeView()
-                .tabItem {
-                    Image(systemName: "person.crop.circle")
-                    Text("Me")
+                    Image(systemName: "person.3.sequence.fill")
+                    Text("Profile")
                 }
         }
     }

@@ -17,27 +17,32 @@ struct SeededRandomNumberGenerator: RandomNumberGenerator {
 }
 
 final class SudokuGenerator {
-    static func generate(seed: String, difficulty: SudokuDifficulty) -> SudokuGrid {
+    struct GeneratedSudoku {
+        let puzzle: SudokuGrid
+        let solution: SudokuGrid
+    }
+    static func generate(seed: String, difficulty: SudokuDifficulty) -> GeneratedSudoku {
         print("🔢 Generating with seed: '\(seed)'")
         let hashed = deterministicHash(seed)
         print("🔢 Deterministic hash: \(hashed)")
         var rng = SeededRandomNumberGenerator(seed: hashed)
-        var grid = baseSolvedGrid()
+        var solution = baseSolvedGrid()
         
         // Test RNG consistency
         let firstRandom = rng.next()
         print("🔢 First random: \(firstRandom)")
         
         // Apply random valid transformations deterministically
-        applyRandomTransforms(&grid, rng: &rng)
+        applyRandomTransforms(&solution, rng: &rng)
         // Remove cells based on difficulty
-        removeCells(&grid, difficulty: difficulty, rng: &rng)
+        var puzzle = solution
+        removeCells(&puzzle, difficulty: difficulty, rng: &rng)
         
         // Print first row for comparison
-        let firstRow = grid.cells[0].map { $0.isGiven ? "\($0.value)" : "_" }.joined(separator: " ")
+        let firstRow = puzzle.cells[0].map { $0.isGiven ? "\($0.value)" : "_" }.joined(separator: " ")
         print("🔢 First row: \(firstRow)")
         
-        return grid
+        return GeneratedSudoku(puzzle: puzzle, solution: solution)
     }
     
     private static func baseSolvedGrid() -> SudokuGrid {

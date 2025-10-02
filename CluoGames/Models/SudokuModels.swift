@@ -7,10 +7,14 @@
 
 import Foundation
 
-public enum SudokuDifficulty: String, CaseIterable, Codable {
+public enum SudokuDifficulty: String, CaseIterable, Codable, GameDifficulty {
     case easy
     case medium
     case hard
+    
+    public var displayName: String {
+        rawValue.capitalized
+    }
 }
 
 public struct SudokuCell: Hashable, Codable {
