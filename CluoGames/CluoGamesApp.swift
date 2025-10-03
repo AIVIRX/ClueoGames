@@ -11,9 +11,9 @@ import RevenueCat
 @main
 struct CluoGamesApp: App {
     init() {
-            Purchases.logLevel = .debug
-            Purchases.configure(withAPIKey: <public_apple_api_key>, appUserID: <app_user_id>)
-        }
+        // Configure RevenueCat via service
+        PurchasesService.shared.configure(appUserID: nil, logLevel: .debug)
+    }
     var body: some Scene {
         WindowGroup {
             MainTabView()
