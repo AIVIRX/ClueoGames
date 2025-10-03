@@ -15,10 +15,10 @@ struct MainTabView: View {
                     Image(systemName: "house.fill")
                     Text("Games")
                 }
-            CombinedProfileView()
+            SettingsView()
                 .tabItem {
-                    Image(systemName: "person.3.sequence.fill")
-                    Text("Profile")
+                    Image(systemName: "gearshape.fill")
+                    Text("Settings")
                 }
         }
     }

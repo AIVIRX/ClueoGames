@@ -44,9 +44,12 @@ final class ExactoViewModel: ObservableObject {
               availableNumbers.contains(right) else { return false }
         let result = compute(op, left, right)
         let success = result == puzzle.target
-        if success { isSolved = true }
+        if success { 
+            isSolved = true
+        }
         return success
     }
+    
     
     // Find a solvable pair (multiplication only) among current numbers
     func findSolution() -> (leftIndex: Int, rightIndex: Int, op: ExactoOperation)? {

@@ -131,6 +131,7 @@ class ConnectionsGameViewModel: ObservableObject {
         guard let startTime = startTime else { return }
         
         let timeToSolve = Date().timeIntervalSince(startTime)
+        let endTime = Date()
         gameState = .completed
         
         // Update puzzle with results
@@ -140,6 +141,7 @@ class ConnectionsGameViewModel: ObservableObject {
         
         // Save to service
         puzzleService.markPuzzleAsSolved(puzzle, timeToSolve: timeToSolve, mistakes: mistakes)
+        
                 
         // Show result screen
         showingResult = true

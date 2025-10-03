@@ -19,11 +19,11 @@ struct CombinedProfileView: View {
                         }
                     }
                 }
-                Section("Friends") {
-                    NavigationLink { FriendsView() } label: {
+                Section("Settings") {
+                    NavigationLink { SettingsView() } label: {
                         HStack {
-                            Image(systemName: "person.2.fill").foregroundColor(.green)
-                            Text("Friends List")
+                            Image(systemName: "gearshape.fill").foregroundColor(.blue)
+                            Text("Settings")
                         }
                     }
                 }

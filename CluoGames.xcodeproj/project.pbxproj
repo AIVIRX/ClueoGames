@@ -7,12 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EC9FE17D2E8F4743000EC42F /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = EC9FE17C2E8F4743000EC42F /* RevenueCat */; };
+		EC9FE17F2E8F4743000EC42F /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = EC9FE17E2E8F4743000EC42F /* RevenueCatUI */; };
+		EC9FE1812E8F4790000EC42F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC9FE1802E8F4790000EC42F /* StoreKit.framework */; };
 		ECC5E90D2E8B04EB00AD3D06 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECC5E90C2E8B04EB00AD3D06 /* GameKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		EC4D511B2E88AF6900912B9A /* CluoGames.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CluoGames.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC4D516A2E88BC4600912B9A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		EC9FE1802E8F4790000EC42F /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		ECC5E90C2E8B04EB00AD3D06 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -29,7 +33,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EC9FE17D2E8F4743000EC42F /* RevenueCat in Frameworks */,
 				ECC5E90D2E8B04EB00AD3D06 /* GameKit.framework in Frameworks */,
+				EC9FE17F2E8F4743000EC42F /* RevenueCatUI in Frameworks */,
+				EC9FE1812E8F4790000EC42F /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -56,6 +63,7 @@
 		EC4D51692E88BC4600912B9A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EC9FE1802E8F4790000EC42F /* StoreKit.framework */,
 				ECC5E90C2E8B04EB00AD3D06 /* GameKit.framework */,
 				EC4D516A2E88BC4600912B9A /* XCTest.framework */,
 			);
@@ -82,6 +90,8 @@
 			);
 			name = CluoGames;
 			packageProductDependencies = (
+				EC9FE17C2E8F4743000EC42F /* RevenueCat */,
+				EC9FE17E2E8F4743000EC42F /* RevenueCatUI */,
 			);
 			productName = CluoGames;
 			productReference = EC4D511B2E88AF6900912B9A /* CluoGames.app */;
@@ -111,6 +121,9 @@
 			);
 			mainGroup = EC4D51122E88AF6900912B9A;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				EC9FE17B2E8F4743000EC42F /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EC4D511C2E88AF6900912B9A /* Products */;
 			projectDirPath = "";
@@ -355,6 +368,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		EC9FE17B2E8F4743000EC42F /* XCRemoteSwiftPackageReference "purchases-ios-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.41.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		EC9FE17C2E8F4743000EC42F /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EC9FE17B2E8F4743000EC42F /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCat;
+		};
+		EC9FE17E2E8F4743000EC42F /* RevenueCatUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EC9FE17B2E8F4743000EC42F /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCatUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EC4D51132E88AF6900912B9A /* Project object */;
 }
