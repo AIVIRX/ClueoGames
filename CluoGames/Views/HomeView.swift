@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import StoreKit
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @State private var showingGame = false
+    @State private var showManageSubscriptionSheet = false
     
     var body: some View {
         NavigationStack {
@@ -37,15 +39,25 @@ struct HomeView: View {
                             SmallActionButtonView(title: "Past Sudoku", systemImage: "archivebox.fill", color: .yellow)
                         }
                                         
-                    GameHeroCard(
-                        title: "The Crossword",
-                        subtitle: "Coming Soon!\nCrossword puzzles will be available soon.",
-                        dateText: "Soon",
-                        icon: "questionmark.square.fill",
-                        tint: Color(.systemBlue),
-                        isLocked: true,
-                        height: 220
-                    )
+                    NavigationLink {
+                        UnscrambleGameView()
+                    } label: {
+                        GameHeroCard(
+                            title: "Unscramble",
+                            subtitle: "Unscramble today's word in 6 tries. Quick, clever, one puzzle a day.",
+                            dateText: "Today",
+                            icon: "questionmark.square.fill",
+                            tint: Color(.systemBlue),
+                            isLocked: false,
+                            height: 200
+                        )
+                    }
+                    
+                    NavigationLink {
+                        PastSudokuView()
+                    } label: {
+                        SmallActionButtonView(title: "Past Sudoku", systemImage: "archivebox.fill", color: .yellow)
+                    }
                     
                     NavigationLink {
                         ExactoModeSelectionView()
@@ -80,13 +92,14 @@ struct HomeView: View {
                 ConnectionsGameView(puzzle: puzzle)
             }
         }
+        .manageSubscriptionsSheet(isPresented: $showManageSubscriptionSheet)
     }
     
     private var welcomeHeader: some View {
         VStack(alignment: .center, spacing: 12) {
             Text("Play with no ads and access past puzzles")
                 .foregroundColor(.secondary)
-            Button(action: {}) {
+            Button(action: { showManageSubscriptionSheet = true }) {
                 Text("Subscribe to Games")
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
@@ -187,7 +200,7 @@ struct SmallActionButtonView: View {
                 Spacer()
                 Image(systemName: systemImage)
             }
-            .foregroundColor(.white)
+            .foregroundColor(.black)
             .padding()
             .frame(maxWidth: .infinity)
             .background(color)

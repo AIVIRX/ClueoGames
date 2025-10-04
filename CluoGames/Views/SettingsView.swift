@@ -8,14 +8,60 @@
 import SwiftUI
 import StoreKit
 import RevenueCatUI
+#if os(iOS)
+import MessageUI
+#endif
+
+#if os(iOS)
+struct MailView: UIViewControllerRepresentable {
+    @Environment(\.presentationMode) var presentationMode
+    @Binding var result: Result<MFMailComposeResult, Error>?
+
+    class Coordinator: NSObject, MFMailComposeViewControllerDelegate {
+        @Binding var presentationMode: PresentationMode
+        @Binding var result: Result<MFMailComposeResult, Error>?
+
+        init(presentationMode: Binding<PresentationMode>, result: Binding<Result<MFMailComposeResult, Error>?>) {
+            _presentationMode = presentationMode
+            _result = result
+        }
+
+        func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+            defer {
+                $presentationMode.wrappedValue.dismiss()
+            }
+            guard error == nil else {
+                self.result = .failure(error!)
+                return
+            }
+            self.result = .success(result)
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        return Coordinator(presentationMode: presentationMode, result: $result)
+    }
+
+    func makeUIViewController(context: UIViewControllerRepresentableContext<MailView>) -> MFMailComposeViewController {
+        let vc = MFMailComposeViewController()
+        vc.mailComposeDelegate = context.coordinator
+        vc.setToRecipients(["support@aivirx.com"])
+        vc.setSubject("DockUI")
+        return vc
+    }
+
+    func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: UIViewControllerRepresentableContext<MailView>) {}
+}
+#endif
 
 struct SettingsView: View {
-    @State private var notificationsEnabled = true
-    @State private var hapticsEnabled = true
-    @State private var darkModeEnabled = false
     @StateObject private var purchases = PurchasesService.shared
     @State private var showManageSubscriptionSheet = false
-    
+#if os(iOS)
+    @State private var result: Result<MFMailComposeResult, Error>? = nil
+#endif
+    @State private var isShowingMailView = false
+
     var body: some View {
         NavigationStack {
             List {
@@ -26,7 +72,7 @@ struct SettingsView: View {
                             .foregroundColor(purchases.hasPremium ? .green : .red)
                             .frame(width: 24)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(purchases.hasPremium ? "Clueo Games+ – Active" : "Clueo Games+ – Inactive")
+                            Text(purchases.hasPremium ? "Clueo Games+" : "Clueo Games+")
                                 .fontWeight(.semibold)
                         }
                         Spacer()
@@ -36,77 +82,72 @@ struct SettingsView: View {
                         .buttonStyle(.bordered)
                     }
                 }
-                // App Settings Section
-                Section("Preferences") {
-                    HStack {
-                        Image(systemName: "bell.fill")
-                            .foregroundColor(.blue)
-                            .frame(width: 24)
-                        Toggle("Notifications", isOn: $notificationsEnabled)
-                    }
-                    
-                    
-                    HStack {
-                        Image(systemName: "iphone.radiowaves.left.and.right")
-                            .foregroundColor(.orange)
-                            .frame(width: 24)
-                        Toggle("Haptic Feedback", isOn: $hapticsEnabled)
-                    }
-                    
-                    HStack {
-                        Image(systemName: "moon.fill")
-                            .foregroundColor(.purple)
-                            .frame(width: 24)
-                        Toggle("Dark Mode", isOn: $darkModeEnabled)
-                    }
-                }
                 
-
+                // Other Apps Section
+                Section("More Apps") {
+                    Button {
+                        if let url = URL(string: "https://apps.apple.com/us/app/dock-ui-snippets-for-swiftui/id6496860953") {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        HStack {
+                            Image("dockui")
+                                .resizable()
+                                .frame(width: 30, height:30)
+                                .cornerRadius(5)
+                            Text("Dock UI: Snippets for SwiftUI")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                    .foregroundColor(.primary)
+                    
+                    Button {
+                        if let url = URL(string: "https://apps.apple.com/us/app/dock-ui-snippets-for-swiftui/id6496860953") {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        HStack {
+                            Image("stockscalc")
+                                .resizable()
+                                .frame(width: 30, height:30)
+                                .cornerRadius(5)
+                            Text("Stock Profit Calculator 2025")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                    .foregroundColor(.primary)
+                }
                 
                 // Support Section
                 Section("Support") {
-                    Button {
-                        // Handle feedback
-                    } label: {
+                    Button(action: {
+                        isShowingMailView.toggle()
+                    }) {
                         HStack {
-                            Image(systemName: "envelope.fill")
-                                .foregroundColor(.green)
-                                .frame(width: 24)
-                            Text("Send Feedback")
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.secondary)
-                                .font(.caption)
+                            HStack {
+                                Image(systemName: "envelope.fill")
+                                    .foregroundColor(.green)
+                                    .frame(width: 24)
+                                Text("Send Feedback")
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.secondary)
+                                    .font(.caption)
+                            }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
                     }
-                    .foregroundColor(.primary)
-                    
-                    Button {
-                        // Handle help
-                    } label: {
-                        HStack {
-                            Image(systemName: "questionmark.circle.fill")
-                                .foregroundColor(.orange)
-                                .frame(width: 24)
-                            Text("Help & FAQ")
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.secondary)
-                                .font(.caption)
-                        }
-                    }
-                    .foregroundColor(.primary)
-                }
-                
-                // Version Section
-                Section {
-                    HStack {
-                        Spacer()
-                        Text("Version 1.0.0")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Spacer()
-                    }
+                    .buttonStyle(PlainButtonStyle())
+#if os(iOS)
+                    .disabled(!MFMailComposeViewController.canSendMail())
+#endif
                 }
                 
                 // Legal Section
@@ -147,6 +188,17 @@ struct SettingsView: View {
                     }
                     .foregroundColor(.primary)
                 }
+                
+                // Version Section
+                Section {
+                    HStack {
+                        Spacer()
+                        Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "5.0.0")")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                    }
+                }
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
@@ -156,11 +208,7 @@ struct SettingsView: View {
     }
 }
 
-// MARK: - Supporting Views
 
-// AboutView removed - version now shown at bottom of settings
-
-// PrivacyView and TermsView removed - now using Safari links
 #Preview {
     SettingsView()
 }
