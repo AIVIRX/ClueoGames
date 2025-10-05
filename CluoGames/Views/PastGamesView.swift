@@ -6,95 +6,93 @@ struct PastGamesView<GameType: PastGame>: View {
     let gameColor: Color
     let onGameSelected: (GameType) -> Void
     @State private var selectedDate: Date = Date()
-    @State private var viewMode: ViewMode = .calendar
     @State private var pastGames: [GameType] = []
     @State private var isLoading = false
-    
-    enum ViewMode: CaseIterable {
-        case calendar, tiles
-        
-        var icon: String {
-            switch self {
-            case .calendar: return "calendar"
-            case .tiles: return "square.grid.2x2"
-            }
-        }
-    }
+    @State private var errorMessage: String?
     
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // View mode picker
-                Picker("View Mode", selection: $viewMode) {
-                    ForEach(ViewMode.allCases, id: \.self) { mode in
-                        Image(systemName: mode.icon)
-                            .tag(mode)
-                    }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding()
-                
-                // Content based on view mode
-                if viewMode == .calendar {
-                    calendarView
+                // Content
+                if isLoading {
+                    loadingView
+                } else if let error = errorMessage {
+                    errorView(error)
+                } else if pastGames.isEmpty {
+                    emptyStateView
                 } else {
-                    tilesView
+                    calendarView
                 }
             }
             .navigationTitle(gameTitle)
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Today") {
                         selectedDate = Date()
                     }
+                    .disabled(isLoading)
                 }
             }
             .onAppear {
                 loadPastGames()
             }
+            .refreshable {
+                await refreshPastGames()
+            }
         }
     }
     
     private var calendarView: some View {
-        CalendarView(selectedDate: $selectedDate) { date in
+        CalendarView(selectedDate: $selectedDate, gameColor: gameColor) { date in
             if let game = pastGames.first(where: { Calendar.current.isDate($0.date, inSameDayAs: date) }) {
-                GameDayView(game: game, gameColor: gameColor) {
+                ModernGameDayView(game: game, gameColor: gameColor, selectedDate: selectedDate) {
                     onGameSelected(game)
                 }
             } else {
-                EmptyDayView()
-            }
-        }
-        .padding()
-    }
-    
-    private var tilesView: some View {
-        ScrollView {
-            LazyVGrid(columns: [
-                GridItem(.flexible()),
-                GridItem(.flexible())
-            ], spacing: 16) {
-                ForEach(pastGames, id: \.date) { game in
-                    GameTileView(game: game, gameColor: gameColor) {
-                        onGameSelected(game)
-                    }
+                ModernEmptyDayView(date: date, selectedDate: selectedDate, gameColor: gameColor) {
+                    selectedDate = date
                 }
             }
-            .padding()
         }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 20)
     }
+    
     
     private func loadPastGames() {
         isLoading = true
-        // Simulate loading past games
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            pastGames = generateSamplePastGames()
-            isLoading = false
+        errorMessage = nil
+        
+        Task {
+            do {
+                let games = try await generateSamplePastGames()
+                await MainActor.run {
+                    pastGames = games
+                    isLoading = false
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = error.localizedDescription
+                    isLoading = false
+                }
+            }
         }
     }
     
-    private func generateSamplePastGames() -> [GameType] {
+    private func refreshPastGames() async {
+        await withCheckedContinuation { continuation in
+            loadPastGames()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                continuation.resume()
+            }
+        }
+    }
+    
+    private func generateSamplePastGames() async throws -> [GameType] {
+        // Simulate network delay
+        try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+        
         // This will be overridden by specific game types
         return []
     }
@@ -105,58 +103,75 @@ struct PastGamesView<GameType: PastGame>: View {
 struct CalendarView<DayView: View>: View {
     @Binding var selectedDate: Date
     let dayView: (Date) -> DayView
+    let gameColor: Color
     
     private let calendar = Calendar.current
     private let dateFormatter = DateFormatter()
     
-    init(selectedDate: Binding<Date>, @ViewBuilder dayView: @escaping (Date) -> DayView) {
+    init(selectedDate: Binding<Date>, gameColor: Color, @ViewBuilder dayView: @escaping (Date) -> DayView) {
         self._selectedDate = selectedDate
+        self.gameColor = gameColor
         self.dayView = dayView
         dateFormatter.dateFormat = "MMMM yyyy"
     }
     
     var body: some View {
-        VStack(spacing: 16) {
-            // Month header
+        VStack(spacing: 0) {
+            // Month header with navigation
             HStack {
                 Button(action: previousMonth) {
                     Image(systemName: "chevron.left")
                         .font(.title2)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.white)
+                        .fontWeight(.semibold)
                 }
                 
                 Spacer()
                 
-                Text(dateFormatter.string(from: selectedDate))
+                Text(dateFormatter.string(from: selectedDate).uppercased())
                     .font(.title2)
-                    .fontWeight(.semibold)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
                 
                 Spacer()
                 
                 Button(action: nextMonth) {
                     Image(systemName: "chevron.right")
                         .font(.title2)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.white)
+                        .fontWeight(.semibold)
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .background(gameColor)
             
             // Calendar grid
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 8) {
+            VStack(spacing: 0) {
                 // Day headers
-                ForEach(["S", "M", "T", "W", "T", "F", "S"], id: \.self) { day in
-                    Text(day)
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(.secondary)
+                HStack(spacing: 0) {
+                    ForEach(Array(["S", "M", "T", "W", "T", "F", "S"].enumerated()), id: \.offset) { index, day in
+                        Text(day)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.primary)
+                            .frame(maxWidth: .infinity, minHeight: 32)
+                    }
                 }
+                .padding(.vertical, 12)
+                .background(Color(.systemBackground))
                 
-                // Calendar days
-                ForEach(calendarDays, id: \.self) { date in
-                    dayView(date)
+                // Calendar days grid
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 7), spacing: 0) {
+                    ForEach(calendarDays, id: \.self) { date in
+                        dayView(date)
+                    }
                 }
+                .background(Color(.systemBackground))
             }
         }
+        .background(Color(.systemBackground))
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 2)
     }
     
     private var calendarDays: [Date] {
@@ -190,40 +205,141 @@ struct CalendarView<DayView: View>: View {
     }
 }
 
-// MARK: - Day Views
+// MARK: - Modern Day Views
 
-struct GameDayView<GameType: PastGame>: View {
+struct ModernGameDayView<GameType: PastGame>: View {
     let game: GameType
     let gameColor: Color
+    let selectedDate: Date
     let onTap: () -> Void
     
+    private let calendar = Calendar.current
+    
     var body: some View {
-        Button(action: onTap) {
-            VStack(spacing: 4) {
-                Text("\(Calendar.current.component(.day, from: game.date))")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                
-                Circle()
-                    .fill(gameColor)
-                    .frame(width: 8, height: 8)
+        Button(action: {
+            print("DEBUG: ModernGameDayView button tapped - isFutureDate: \(isFutureDate), game.date: \(game.date)")
+            if !isFutureDate {
+                onTap()
             }
-            .frame(width: 32, height: 32)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(gameColor.opacity(0.1))
-            )
+        }) {
+            Text("\(calendar.component(.day, from: game.date))")
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(textColor)
+                .frame(width: 44, height: 44)
+                .background(
+                    Circle()
+                        .fill(circleColor)
+                )
         }
         .buttonStyle(PlainButtonStyle())
+        .disabled(isFutureDate)
+    }
+    
+    private var isSelected: Bool {
+        calendar.isDate(game.date, inSameDayAs: selectedDate)
+    }
+    
+    private var isToday: Bool {
+        calendar.isDateInToday(game.date)
+    }
+    
+    private var isFutureDate: Bool {
+        calendar.isDate(game.date, inSameDayAs: Date()) == false && game.date > Date()
+    }
+    
+    private var circleColor: Color {
+        if isFutureDate {
+            return .clear
+        } else if isToday {
+            return .green
+        } else {
+            return .clear
+        }
+    }
+    
+    private var textColor: Color {
+        if isFutureDate {
+            return .gray
+        } else if circleColor == .clear {
+            return .primary
+        } else {
+            return .white
+        }
     }
 }
 
-struct EmptyDayView: View {
+struct ModernEmptyDayView: View {
+    let date: Date
+    let selectedDate: Date
+    let gameColor: Color
+    let onTap: () -> Void
+    
+    private let calendar = Calendar.current
+    
     var body: some View {
-        Text("\(Calendar.current.component(.day, from: Date()))")
-            .font(.caption)
-            .foregroundColor(.secondary)
-            .frame(width: 32, height: 32)
+        Button(action: isFutureDate ? {} : onTap) {
+            Text("\(calendar.component(.day, from: date))")
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(textColor)
+                .frame(width: 44, height: 44)
+                .background(
+                    Circle()
+                        .fill(circleColor)
+                )
+        }
+        .buttonStyle(PlainButtonStyle())
+        .disabled(isFutureDate)
+    }
+    
+    private var isSelected: Bool {
+        calendar.isDate(date, inSameDayAs: selectedDate)
+    }
+    
+    private var isToday: Bool {
+        calendar.isDateInToday(date)
+    }
+    
+    private var isFutureDate: Bool {
+        calendar.isDate(date, inSameDayAs: Date()) == false && date > Date()
+    }
+    
+    private var circleColor: Color {
+        if isFutureDate {
+            return .clear
+        } else if isToday {
+            return .green
+        } else {
+            return .clear
+        }
+    }
+    
+    private var textColor: Color {
+        if isFutureDate {
+            return .gray
+        } else if circleColor == .clear {
+            return .primary
+        } else {
+            return .white
+        }
+    }
+}
+
+struct GameCompletionIcon: View {
+    let gameColor: Color
+    let isSelected: Bool
+    
+    var body: some View {
+        ZStack {
+            // Game icon background
+            Circle()
+                .fill(isSelected ? Color.white : gameColor)
+                .frame(width: 20, height: 20)
+            
+            // Game icon
+            Image(systemName: "gamecontroller.fill")
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(isSelected ? gameColor : .white)
+        }
     }
 }
 
@@ -277,9 +393,10 @@ struct GameTileView<GameType: PastGame>: View {
 // MARK: - Past Game Protocol
 
 protocol PastGame {
+    associatedtype DifficultyType: GameDifficulty
     var date: Date { get }
     var dateString: String { get }
-    var difficulty: any GameDifficulty { get }
+    var difficulty: DifficultyType { get }
     var score: Int? { get }
 }
 
@@ -288,8 +405,10 @@ protocol PastGame {
 // MARK: - Sample Implementations
 
 struct SamplePastGame: PastGame {
+    typealias DifficultyType = SampleDifficulty
+    
     let date: Date
-    let difficulty: any GameDifficulty
+    let difficulty: SampleDifficulty
     let score: Int?
     
     var dateString: String {
@@ -306,5 +425,158 @@ enum SampleDifficulty: String, GameDifficulty, CaseIterable {
     
     var displayName: String {
         rawValue.capitalized
+    }
+}
+
+// MARK: - New Modern Views
+
+extension PastGamesView {
+    
+    
+    private var loadingView: some View {
+        VStack(spacing: 16) {
+            ProgressView()
+                .scaleEffect(1.2)
+                .tint(gameColor)
+            Text("Loading past games...")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemGroupedBackground))
+    }
+    
+    private func errorView(_ error: String) -> some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: 48))
+                .foregroundColor(.orange)
+            
+            Text("Unable to load games")
+                .font(.headline)
+                .fontWeight(.semibold)
+            
+            Text(error)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+            
+            Button("Try Again") {
+                loadPastGames()
+            }
+            .buttonStyle(.bordered)
+            .tint(gameColor)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemGroupedBackground))
+    }
+    
+    private var emptyStateView: some View {
+        VStack(spacing: 20) {
+            Image(systemName: gameIcon)
+                .font(.system(size: 64))
+                .foregroundColor(gameColor.opacity(0.6))
+            
+            Text("No past games yet")
+                .font(.title2)
+                .fontWeight(.semibold)
+            
+            Text("Start playing to see your game history here")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemGroupedBackground))
+    }
+}
+
+// MARK: - Modern Game Tile View
+
+struct ModernGameTileView<GameType: PastGame>: View {
+    let game: GameType
+    let gameColor: Color
+    let index: Int
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 12) {
+                // Header with date and status
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(game.dateString)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(.primary)
+                        
+                        Text(game.difficulty.displayName)
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(gameColor)
+                        .font(.title3)
+                }
+                
+                // Score or completion info
+                if let score = game.score {
+                    HStack {
+                        Image(systemName: "star.fill")
+                            .foregroundColor(.yellow)
+                            .font(.caption)
+                        Text("\(score)")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                        Spacer()
+                    }
+                } else {
+                    HStack {
+                        Image(systemName: "clock")
+                            .foregroundColor(.secondary)
+                            .font(.caption)
+                        Text("In Progress")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                    }
+                }
+                
+                Spacer()
+                
+                // Game number indicator
+                HStack {
+                    Spacer()
+                    Text("#\(index + 1)")
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .foregroundColor(gameColor)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            Capsule()
+                                .fill(gameColor.opacity(0.2))
+                        )
+                }
+            }
+            .padding(16)
+            .frame(height: 120)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color(.systemBackground))
+                    .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(gameColor.opacity(0.2), lineWidth: 1)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }

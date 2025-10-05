@@ -29,10 +29,7 @@ public struct ExactoPuzzle: Codable, Hashable {
 }
 
 public enum ExactoOperation: String, CaseIterable, Codable {
-    case add = "+"
-    case subtract = "-"
     case multiply = "×"
-    case divide = "÷"
 }
 
 public struct ExactoStep: Codable, Hashable {

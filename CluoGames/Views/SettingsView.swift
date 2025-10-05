@@ -56,7 +56,7 @@ struct MailView: UIViewControllerRepresentable {
 
 struct SettingsView: View {
     @StateObject private var purchases = PurchasesService.shared
-    @State private var showManageSubscriptionSheet = false
+    @State private var showPaywall = false
 #if os(iOS)
     @State private var result: Result<MFMailComposeResult, Error>? = nil
 #endif
@@ -76,8 +76,8 @@ struct SettingsView: View {
                                 .fontWeight(.semibold)
                         }
                         Spacer()
-                        Button("Manage") {
-                            showManageSubscriptionSheet = true
+                        Button(purchases.hasPremium ? "Manage" : "Subscribe") {
+                            showPaywall = true
                         }
                         .buttonStyle(.bordered)
                     }
@@ -203,8 +203,9 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
         }
-        // Removed auto-presenting paywall for a calmer UX
-        .manageSubscriptionsSheet(isPresented: $showManageSubscriptionSheet)
+        .fullScreenCover(isPresented: $showPaywall) {
+            CustomPaywallView()
+        }
     }
 }
 

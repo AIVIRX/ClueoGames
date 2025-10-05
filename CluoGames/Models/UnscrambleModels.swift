@@ -142,17 +142,3 @@ enum UnscrambleGameState {
     case lost
 }
 
-// MARK: - Game Statistics
-struct UnscrambleStats: Codable {
-    var gamesPlayed: Int = 0
-    var gamesWon: Int = 0
-    var currentStreak: Int = 0
-    var longestStreak: Int = 0
-    var averageGuesses: Double = 0.0
-    var lastPlayDate: Date?
-    
-    var winRate: Double {
-        guard gamesPlayed > 0 else { return 0 }
-        return Double(gamesWon) / Double(gamesPlayed) * 100
-    }
-}

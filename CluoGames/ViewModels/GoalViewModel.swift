@@ -66,14 +66,7 @@ final class ExactoViewModel: ObservableObject {
     
     func compute(_ op: ExactoOperation, _ a: Int, _ b: Int) -> Int {
         switch op {
-        case .add: return a + b
-        case .subtract: return a - b
         case .multiply: return a * b
-        case .divide:
-            // Not used in gameplay now; keep safe behavior
-            if b == 0 { return a }
-            if a % b != 0 { return a / b }
-            return a / b
         }
     }
     

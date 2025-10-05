@@ -11,13 +11,14 @@ import StoreKit
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @State private var showingGame = false
-    @State private var showManageSubscriptionSheet = false
+    @State private var showPaywall = false
     
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 10) {
+                VStack(spacing: 5) {
                     welcomeHeader
+                        .padding(.bottom)
                     
                     NavigationLink {
                         SudokuModeSelectionView()
@@ -38,6 +39,7 @@ struct HomeView: View {
                         } label: {
                             SmallActionButtonView(title: "Past Sudoku", systemImage: "archivebox.fill", color: .yellow)
                         }
+                        .padding(.bottom)
                                         
                     NavigationLink {
                         UnscrambleGameView()
@@ -56,8 +58,9 @@ struct HomeView: View {
                     NavigationLink {
                         PastSudokuView()
                     } label: {
-                        SmallActionButtonView(title: "Past Sudoku", systemImage: "archivebox.fill", color: .yellow)
+                        SmallActionButtonView(title: "Past Unscramble", systemImage: "archivebox.fill", color: .blue)
                     }
+                    .padding(.bottom)
                     
                     NavigationLink {
                         ExactoModeSelectionView()
@@ -74,10 +77,12 @@ struct HomeView: View {
                     }
                     
                         NavigationLink {
-                            PastExactoView()
+                            //PastExactoView()
                         } label: {
                             SmallActionButtonView(title: "Past Exacto", systemImage: "archivebox.fill", color: .pink)
                         }
+                        .padding(.bottom)
+
                     
                 }
                 .padding(.horizontal)
@@ -87,20 +92,17 @@ struct HomeView: View {
             .navigationBarTitleDisplayMode(.inline)
             .background(Color(.systemGroupedBackground))
         }
-        .fullScreenCover(isPresented: $showingGame) {
-            if let puzzle = viewModel.todaysPuzzle {
-                ConnectionsGameView(puzzle: puzzle)
-            }
+        .fullScreenCover(isPresented: $showPaywall) {
+            CustomPaywallView()
         }
-        .manageSubscriptionsSheet(isPresented: $showManageSubscriptionSheet)
     }
     
     private var welcomeHeader: some View {
         VStack(alignment: .center, spacing: 12) {
             Text("Play with no ads and access past puzzles")
                 .foregroundColor(.secondary)
-            Button(action: { showManageSubscriptionSheet = true }) {
-                Text("Subscribe to Games")
+            Button(action: { showPaywall = true }) {
+                Text("Subscribe to Clueo Games+")
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
                     .padding(.horizontal, 16)
@@ -112,69 +114,10 @@ struct HomeView: View {
     }
 }
 
-// MARK: - Supporting Views
-
-struct SmallActionButton: View {
-    let title: String
-    let systemImage: String
-    let color: Color
-    var action: () -> Void
-    
-    init(title: String, systemImage: String, color: Color = .blue, action: @escaping () -> Void) {
-        self.title = title
-        self.systemImage = systemImage
-        self.color = color
-        self.action = action
-    }
-    
-    var body: some View {
-        Button(action: action) {
-            ZStack(alignment: .topLeading) {
-                // Back layers (stacked cards)
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(color.opacity(0.3))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.white.opacity(0.1), lineWidth: 1)
-                    )
-                    .offset(y: 10)
-                    .shadow(color: .black.opacity(0.03), radius: 2, x: 0, y: 1)
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(color.opacity(0.6))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.white.opacity(0.1), lineWidth: 1)
-                    )
-                    .offset(y: 5)
-                    .shadow(color: .black.opacity(0.04), radius: 2, x: 0, y: 1)
-                // Front content card
-                HStack {
-                    Text(title).font(.headline)
-                    Spacer()
-                    Image(systemName: systemImage)
-                }
-                .foregroundColor(.white)
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(color)
-                .cornerRadius(16)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                )
-                .shadow(color: .black.opacity(0.06), radius: 3, x: 0, y: 2)
-            }
-            .frame(maxWidth: .infinity)
-        }
-        .padding(.bottom)
-    }
-}
-
 struct SmallActionButtonView: View {
     let title: String
     let systemImage: String
     let color: Color
-    
     var body: some View {
         ZStack(alignment: .topLeading) {
             // Back layers (stacked cards)
@@ -184,7 +127,7 @@ struct SmallActionButtonView: View {
                     RoundedRectangle(cornerRadius: 16)
                         .stroke(Color.white.opacity(0.1), lineWidth: 1)
                 )
-                .offset(y: 10)
+                .offset(y: 6)
                 .shadow(color: .black.opacity(0.03), radius: 2, x: 0, y: 1)
             RoundedRectangle(cornerRadius: 16)
                 .fill(color.opacity(0.6))
@@ -192,7 +135,7 @@ struct SmallActionButtonView: View {
                     RoundedRectangle(cornerRadius: 16)
                         .stroke(Color.white.opacity(0.1), lineWidth: 1)
                 )
-                .offset(y: 5)
+                .offset(y: 4)
                 .shadow(color: .black.opacity(0.04), radius: 2, x: 0, y: 1)
             // Front content card
             HStack {
@@ -302,96 +245,8 @@ struct GameHeroCard: View {
                 .foregroundColor(.black.opacity(0.8))
         }
     }
-    
-    private func capsuleBadge(text: String) -> some View {
-        Text(text)
-            .font(.caption).bold()
-            .foregroundColor(.white)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .background(Color.black.opacity(0.35))
-            .clipShape(Capsule())
-    }
 }
 
-struct StatCard: View {
-    let title: String
-    let value: String
-    let icon: String
-    let color: Color
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundColor(color)
-            
-            Text(value)
-                .font(.title2)
-                .fontWeight(.bold)
-            
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
-    }
-}
-
-struct GameModeCard: View {
-    let title: String
-    let description: String
-    let icon: String
-    let color: Color
-    let isAvailable: Bool
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: icon)
-                    .font(.title2)
-                    .foregroundColor(isAvailable ? color : .gray)
-                
-                Spacer()
-                
-                if !isAvailable {
-                    Text("Soon")
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.gray)
-                        .cornerRadius(8)
-                }
-            }
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(isAvailable ? .primary : .gray)
-                
-                Text(description)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-        }
-        .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
-        .opacity(isAvailable ? 1.0 : 0.6)
-    }
-}
-
-
-// MARK: - View Utilities
 extension View {
     func outline(_ color: Color, lineWidth: CGFloat) -> some View {
         let r = max(lineWidth, 0.5)

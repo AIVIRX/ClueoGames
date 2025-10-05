@@ -52,7 +52,6 @@ struct UnscrambleGameView: View {
     }
     
     // MARK: - Header
-    
     private var header: some View {
         VStack(spacing: 12) {
             Text("Unscramble the word")
@@ -83,7 +82,6 @@ struct UnscrambleGameView: View {
     }
     
     // MARK: - Game Board
-    
     private var gameBoard: some View {
         VStack(spacing: 8) {
             // Previous guesses

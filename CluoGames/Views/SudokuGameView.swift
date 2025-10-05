@@ -78,7 +78,7 @@ struct SudokuGameView: View {
                             viewModel.revealAll()
                         }
                     } label: {
-                        Image(systemName: "lightbulb")
+                        Image(systemName: "questionmark")
                             .font(.system(size: 18, weight: .medium))
                     }
                     .disabled(isCompleted)
@@ -430,7 +430,7 @@ struct SudokuGameView: View {
                         .font(.system(size: 20, weight: .medium))
                         .foregroundColor(canModifySelectedCell() ? .red : .gray)
                         .frame(width: 60, height: 60)
-                        .background(canModifySelectedCell() ? Color.red.opacity(0.1) : Color.gray.opacity(0.3))
+                        .background(canModifySelectedCell() ? Color(.gray.opacity(0.5)) : Color.gray.opacity(0.3))
                         .cornerRadius(16)
                 }
                 .disabled(!canModifySelectedCell())
@@ -471,23 +471,6 @@ struct SudokuGameView: View {
                 Section("Game Settings") {
                     Toggle("Show Conflict Indicators", isOn: $showConflicts)
                         .help("When enabled, shows red dots on conflicting tiles")
-                }
-                
-                Section("About") {
-                    HStack {
-                        Text("Difficulty")
-                        Spacer()
-                        Text(difficulty.rawValue.capitalized)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    HStack {
-                        Text("Seed")
-                        Spacer()
-                        Text(seed)
-                            .foregroundColor(.secondary)
-                            .font(.system(.caption, design: .monospaced))
-                    }
                 }
             }
             .navigationTitle("Settings")
