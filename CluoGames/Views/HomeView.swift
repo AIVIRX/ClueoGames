@@ -10,6 +10,7 @@ import StoreKit
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
+    @StateObject private var purchases = PurchasesService.shared
     @State private var showingGame = false
     @State private var showPaywall = false
     
@@ -56,7 +57,7 @@ struct HomeView: View {
                     }
                     
                     NavigationLink {
-                        PastSudokuView()
+                        PastUnscrambleView()
                     } label: {
                         SmallActionButtonView(title: "Past Unscramble", systemImage: "archivebox.fill", color: .blue)
                     }
@@ -77,7 +78,7 @@ struct HomeView: View {
                     }
                     
                         NavigationLink {
-                            //PastExactoView()
+                            PastExactoView()
                         } label: {
                             SmallActionButtonView(title: "Past Exacto", systemImage: "archivebox.fill", color: .pink)
                         }
@@ -99,16 +100,27 @@ struct HomeView: View {
     
     private var welcomeHeader: some View {
         VStack(alignment: .center, spacing: 12) {
-            Text("Play with no ads and access past puzzles")
-                .foregroundColor(.secondary)
-            Button(action: { showPaywall = true }) {
-                Text("Subscribe to Clueo Games+")
+            if purchases.hasPremium {
+                // Content for subscribed users
+                Text("Hey there")
+                    .font(.title2)
                     .fontWeight(.semibold)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(Color.blue)
-                    .cornerRadius(24)
+                    .foregroundColor(.primary)
+                Text("Play a puzzle to keep your mind working")
+                    .foregroundColor(.secondary)
+            } else {
+                // Content for non-subscribed users
+                Text("Play with no ads and access past puzzles")
+                    .foregroundColor(.secondary)
+                Button(action: { showPaywall = true }) {
+                    Text("Subscribe to Clueo Games+")
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(Color.blue)
+                        .cornerRadius(24)
+                }
             }
         }
     }

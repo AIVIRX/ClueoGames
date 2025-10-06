@@ -20,7 +20,10 @@ struct CustomPaywallView: View {
             if let offerings = purchases.offerings, let currentOffering = offerings.current {
                 PaywallView(offering: currentOffering)
                     .onPurchaseCompleted { customerInfo in
-                        // Handle successful purchase
+                        // Handle successful purchase - refresh customer info
+                        Task {
+                            await purchases.loadCustomerInfo()
+                        }
                         dismiss()
                     }
                     .onPurchaseFailure { error in
@@ -29,7 +32,10 @@ struct CustomPaywallView: View {
                         showingError = true
                     }
                     .onRestoreCompleted { customerInfo in
-                        // Handle successful restore
+                        // Handle successful restore - refresh customer info
+                        Task {
+                            await purchases.loadCustomerInfo()
+                        }
                         dismiss()
                     }
                     .onRestoreFailure { error in
@@ -59,9 +65,10 @@ struct CustomPaywallView: View {
             Text(errorMessage)
         }
         .onAppear {
-            // Refresh offerings when paywall appears
+            // Refresh offerings and customer info when paywall appears
             Task {
                 await purchases.loadOfferings()
+                await purchases.loadCustomerInfo()
             }
         }
     }

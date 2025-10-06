@@ -94,8 +94,8 @@ final class PurchasesService: NSObject, ObservableObject {
     @MainActor
     private func handleCustomerInfo(_ info: CustomerInfo) {
         customerInfo = info
-        // Replace "premium" with your entitlement identifier in RevenueCat dashboard
-        hasPremium = info.entitlements.active.keys.contains("premium")
+        // Check for "Premium" entitlement (matches RevenueCat dashboard)
+        hasPremium = info.entitlements.active.keys.contains("Premium")
     }
 }
 

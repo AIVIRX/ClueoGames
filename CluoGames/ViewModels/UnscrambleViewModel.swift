@@ -72,6 +72,13 @@ final class UnscrambleViewModel: ObservableObject {
         showInvalidWord = false
     }
     
+    func revealWord() {
+        // End the game and show the result
+        game.isGameOver = true
+        gameState = .lost
+        showResult = true
+    }
+    
     // MARK: - Private Methods
     
     private func handleCorrectGuess() {

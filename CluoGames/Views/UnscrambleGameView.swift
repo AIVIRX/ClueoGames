@@ -10,6 +10,7 @@ import SwiftUI
 struct UnscrambleGameView: View {
     @StateObject private var viewModel: UnscrambleViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var showSettings = false
     
     init(game: UnscrambleGame? = nil) {
         _viewModel = StateObject(wrappedValue: UnscrambleViewModel(game: game))
@@ -28,11 +29,22 @@ struct UnscrambleGameView: View {
             .navigationTitle("Unscramble")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Close") { dismiss() }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showSettings = true }) {
+                        Image(systemName: "gearshape")
+                            .font(.system(size: 18, weight: .medium))
+                    }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Reset") { viewModel.resetGame() }
+                    Menu {
+                        Button("Reveal word") {
+                            viewModel.revealWord()
+                        }
+                    } label: {
+                        Image(systemName: "questionmark")
+                            .font(.system(size: 18, weight: .medium))
+                    }
+                    .disabled(viewModel.isGameOver)
                 }
             }
             .alert("Invalid Word", isPresented: $viewModel.showInvalidWord) {
@@ -47,6 +59,9 @@ struct UnscrambleGameView: View {
                     guesses: viewModel.game.guesses,
                     onDismiss: { dismiss() }
                 )
+            }
+            .sheet(isPresented: $showSettings) {
+                UnscrambleSettingsView()
             }
         }
     }
@@ -327,6 +342,35 @@ struct UnscrambleResultView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") { onDismiss() }
+                }
+            }
+        }
+    }
+}
+
+struct UnscrambleSettingsView: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 20) {
+                Text("Unscramble Settings")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Text("Settings coming soon!")
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+            }
+            .padding()
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
                 }
             }
         }

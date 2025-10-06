@@ -206,6 +206,12 @@ struct SettingsView: View {
         .fullScreenCover(isPresented: $showPaywall) {
             CustomPaywallView()
         }
+        .onAppear {
+            // Refresh subscription status when settings view appears
+            Task {
+                await purchases.loadCustomerInfo()
+            }
+        }
     }
 }
 
