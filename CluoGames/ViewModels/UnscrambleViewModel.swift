@@ -35,9 +35,10 @@ final class UnscrambleViewModel: ObservableObject {
     
     func addLetter(_ character: Character) {
         guard gameState == .inProgress else { return }
-        guard game.currentGuess.letters.count < 7 else { return }
+        guard game.currentGuess.letters.count < game.word.count else { return }
         
         game.currentGuess.addLetter(character)
+        game.currentGuess.isComplete = game.currentGuess.letters.count == game.word.count
         objectWillChange.send()
     }
     
@@ -46,6 +47,7 @@ final class UnscrambleViewModel: ObservableObject {
         guard !game.currentGuess.letters.isEmpty else { return }
         
         game.currentGuess.removeLastLetter()
+        game.currentGuess.isComplete = game.currentGuess.letters.count == game.word.count
         objectWillChange.send()
     }
     
@@ -82,15 +84,17 @@ final class UnscrambleViewModel: ObservableObject {
     // MARK: - Private Methods
     
     private func handleCorrectGuess() {
-        game.currentGuess.isCorrect = true
-        game.guesses.append(game.currentGuess)
+        // Analyze the guess to color the letters properly
+        var analyzedGuess = analyzeGuess(game.currentGuess)
+        analyzedGuess.isCorrect = true
+        game.guesses.append(analyzedGuess)
         game.isSolved = true
         game.isGameOver = true
         gameState = .won
         showResult = true
         
         // Update keyboard states for final guess
-        updateKeyboardStates(for: game.currentGuess)
+        updateKeyboardStates(for: analyzedGuess)
     }
     
     private func handleIncorrectGuess() {
@@ -193,8 +197,8 @@ final class UnscrambleViewModel: ObservableObject {
     // MARK: - Computed Properties
     
     var canSubmitGuess: Bool {
-        return gameState == .inProgress && 
-               game.currentGuess.isComplete && 
+        return gameState == .inProgress &&
+               game.currentGuess.isComplete &&
                game.remainingGuesses > 0 &&
                !game.isSolved
     }

@@ -194,15 +194,17 @@ struct GameHeroCard: View {
     let title: String
     let subtitle: String
     let dateText: String?
+    let statusText: String?
     let icon: String
     let tint: Color
     let isLocked: Bool
     var height: CGFloat? = nil
     
-    init(title: String, subtitle: String, dateText: String?, icon: String, tint: Color, isLocked: Bool, height: CGFloat? = nil) {
+    init(title: String, subtitle: String, dateText: String?, statusText: String? = nil, icon: String, tint: Color, isLocked: Bool, height: CGFloat? = nil) {
         self.title = title
         self.subtitle = subtitle
         self.dateText = dateText
+        self.statusText = statusText
         self.icon = icon
         self.tint = tint
         self.isLocked = isLocked
@@ -229,10 +231,23 @@ struct GameHeroCard: View {
                 }
                 
                 if let dateText {
-                    Text(dateText)
-                        .font(.headline)
-                        .bold()
-                        .foregroundColor(.black)
+                    HStack {
+                        Text(dateText)
+                            .font(.headline)
+                            .bold()
+                            .foregroundColor(.black)
+                        Spacer()
+                        if let statusText, !statusText.isEmpty {
+                            HStack(spacing: 6) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.black)
+                                Text(statusText)
+                                    .font(.headline)
+                                    .bold()
+                                    .foregroundColor(.black)
+                            }
+                        }
+                    }
                 }
             }
             .padding(20)

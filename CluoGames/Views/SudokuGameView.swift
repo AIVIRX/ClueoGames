@@ -7,21 +7,8 @@
 
 import SwiftUI
 
-enum SudokuColorScheme: String, CaseIterable {
-    case light = "Light"
-    case dark = "Dark"
-    case auto = "Auto"
-    
-    var colorScheme: ColorScheme? {
-        switch self {
-        case .light: return .light
-        case .dark: return .dark
-        case .auto: return nil // nil means use system default
-        }
-    }
-}
-
 struct SudokuGameView: View {
+    @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel: SudokuViewModel
     private let seed: String
     private let difficulty: SudokuDifficulty
@@ -45,9 +32,6 @@ struct SudokuGameView: View {
     @State private var startTime = Date()
     @State private var elapsedTime: TimeInterval = 0
     @State private var timer: Timer?
-    @State private var showSettings = false
-    @State private var showConflicts = false
-    @State private var selectedColorScheme: SudokuColorScheme = .light
     
     var body: some View {
         ScrollView{
@@ -67,12 +51,6 @@ struct SudokuGameView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showSettings = true }) {
-                        Image(systemName: "gearshape")
-                            .font(.system(size: 18, weight: .medium))
-                    }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
                         Button("Reveal all") {
                             viewModel.revealAll()
@@ -84,13 +62,8 @@ struct SudokuGameView: View {
                     .disabled(isCompleted)
                 }
             }
-            .preferredColorScheme(selectedColorScheme.colorScheme)
-            .sheet(isPresented: $showSettings) {
-                settingsView
-            }
         }
         .onAppear {
-            loadSettings()
             startTimer()
             selectFirstEditableCell()
         }
@@ -99,12 +72,6 @@ struct SudokuGameView: View {
         }
         .onChange(of: viewModel.grid) { _, _ in
             checkForCompletion()
-        }
-        .onChange(of: showConflicts) { _, _ in
-            saveSettings()
-        }
-        .onChange(of: selectedColorScheme) { _, _ in
-            saveSettings()
         }
         .sheet(isPresented: $isCompleted) {
             completionSheet
@@ -174,30 +141,13 @@ struct SudokuGameView: View {
         return String(format: "%02d:%02d", minutes, seconds)
     }
     
-    private func loadSettings() {
-        // Load conflict indicators setting (default to true)
-        showConflicts = UserDefaults.standard.object(forKey: "SudokuShowConflicts") as? Bool ?? true
-        
-        // Load color scheme setting (default to light)
-        if let savedScheme = UserDefaults.standard.string(forKey: "SudokuColorScheme"),
-           let scheme = SudokuColorScheme(rawValue: savedScheme) {
-            selectedColorScheme = scheme
-        } else {
-            selectedColorScheme = .light
-        }
-    }
-    
-    private func saveSettings() {
-        UserDefaults.standard.set(showConflicts, forKey: "SudokuShowConflicts")
-        UserDefaults.standard.set(selectedColorScheme.rawValue, forKey: "SudokuColorScheme")
-    }
-    
     private func checkForCompletion() {
         // Check if all cells are filled and valid
         let isComplete = isBoardComplete()
         if isComplete && !isCompleted {
             isCompleted = true
             stopTimer()
+            CompletionService.shared.markCompleted(gameType: .sudoku, date: completionDate())
             onComplete?()
         }
     }
@@ -235,6 +185,21 @@ struct SudokuGameView: View {
             }
         }
     }
+
+    private func completionDate() -> Date {
+        // Past Sudoku uses seeds like "MMM d, yyyy" from DailyGame.dateString.
+        let pretty = DateFormatter()
+        pretty.dateFormat = "MMM d, yyyy"
+        if let d = pretty.date(from: seed) { return d }
+        
+        // Fallback: try ISO-like tokens inside seed
+        let iso = DateFormatter()
+        iso.dateFormat = "yyyy-MM-dd"
+        if let d = iso.date(from: seed) { return d }
+        
+        // Last resort
+        return Date()
+    }
     
     private func cell(_ r: Int, _ c: Int, size: CGFloat) -> some View {
         let cell = viewModel.grid.cells[r][c]
@@ -254,7 +219,7 @@ struct SudokuGameView: View {
                 .animation(.easeInOut(duration: 0.3), value: cell.value)
             
             // Conflict indicator (red dot in top right)
-            if showConflicts && hasConflict && cell.value != 0 {
+            if hasConflict && cell.value != 0 {
                 Circle()
                     .fill(Color.red)
                     .frame(width: size * 0.15, height: size * 0.15)
@@ -443,6 +408,12 @@ struct SudokuGameView: View {
         Button(action: { 
             if canModifySelectedCell() {
                 viewModel.set(value: number) 
+                // Trigger warning haptic if current placement causes a conflict
+                if let r = viewModel.selectedRow, let c = viewModel.selectedCol {
+                    if hasConflict(at: r, col: c) {
+                        HapticsManager.shared.trigger(.warning)
+                    }
+                }
             }
         }) {
             Text(String(number))
@@ -455,69 +426,20 @@ struct SudokuGameView: View {
         }
         .disabled(!canModifySelectedCell())
     }
-    
-    private var settingsView: some View {
-        NavigationView {
-            Form {
-                Section("Appearance") {
-                    Picker("Color Scheme", selection: $selectedColorScheme) {
-                        ForEach(SudokuColorScheme.allCases, id: \.self) { scheme in
-                            Text(scheme.rawValue).tag(scheme)
-                        }
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
-                }
-                
-                Section("Game Settings") {
-                    Toggle("Show Conflict Indicators", isOn: $showConflicts)
-                        .help("When enabled, shows red dots on conflicting tiles")
-                }
-            }
-            .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        showSettings = false
-                    }
-                }
-            }
-        }
-    }
 
     private var completionSheet: some View {
-        NavigationStack {
-            VStack(spacing: 24) {
-                Spacer()
-                ZStack {
-                    Circle()
-                        .fill(Color.green.opacity(0.2))
-                        .frame(width: 120, height: 120)
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 50, weight: .bold))
-                        .foregroundColor(.green)
-                }
-                Text("Sudoku Complete!")
-                    .font(.title)
-                    .fontWeight(.bold)
-                Text("Time: \(formatTime(elapsedTime))")
-                    .font(.title3)
-                    .foregroundColor(.secondary)
-                Button(action: { isCompleted = false }) {
-                    Text("Done")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(12)
-                }
-                Spacer()
-            }
-            .padding()
-            .navigationTitle("Great Job!")
-            .navigationBarTitleDisplayMode(.inline)
-        }
+        GameCompletionView(
+            gameType: "Sudoku",
+            isWon: true,
+            primaryInfo: "Puzzle Complete!",
+            secondaryInfo: "Time: \(formatTime(elapsedTime))",
+            additionalChips: [
+                CompletionChip(title: "Time", value: formatTime(elapsedTime), icon: "clock.fill"),
+                CompletionChip(title: "Difficulty", value: difficulty.rawValue.capitalized, icon: "bolt.fill")
+            ],
+            onDone: { isCompleted = false },
+            onBackToList: { dismiss() }
+        )
     }
 }
 

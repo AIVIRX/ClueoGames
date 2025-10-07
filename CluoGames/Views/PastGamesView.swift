@@ -20,6 +20,7 @@ struct PastGamesListView: View {
     let gameIcon: String
     let gameColor: Color
     let gameType: GameType
+    @StateObject private var completion = CompletionService.shared
     
     var body: some View {
         NavigationStack {
@@ -33,6 +34,7 @@ struct PastGamesListView: View {
                                 title: gameTitle,
                                 subtitle: gameSubtitle,
                                 dateText: dailyGame.dateString,
+                                statusText: completionStatus(for: dailyGame.date),
                                 icon: gameIcon,
                                 tint: gameColor,
                                 isLocked: false,
@@ -41,6 +43,7 @@ struct PastGamesListView: View {
                         }
                     }
                 }
+                .id(completion.updatedAt)
                 .padding(.horizontal, 16)
                 .padding(.top, 16)
             }
@@ -84,8 +87,19 @@ struct PastGamesListView: View {
         case .exacto:
             return AnyView(ExactoGameView(seed: dailyGame.dateString, difficulty: .medium))
         case .unscramble:
-            return AnyView(UnscrambleGameView())
+            let game = UnscrambleGenerator.generateDailyGame(for: dailyGame.date)
+            return AnyView(UnscrambleGameView(game: game))
         }
+    }
+
+    private func completionStatus(for date: Date) -> String? {
+        let type: DailyGameType
+        switch gameType {
+        case .sudoku: type = .sudoku
+        case .exacto: type = .exacto
+        case .unscramble: type = .unscramble
+        }
+        return CompletionService.shared.isCompleted(gameType: type, date: date) ? "Completed" : nil
     }
     
     private var gameSubtitle: String {

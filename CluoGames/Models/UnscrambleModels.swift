@@ -71,7 +71,7 @@ struct UnscrambleGuess: Identifiable, Codable {
     init(word: String) {
         self.id = UUID()
         self.letters = word.map { UnscrambleLetter($0) }
-        self.isComplete = !word.isEmpty
+        self.isComplete = false // Will be set properly when needed
     }
     
     var word: String {
@@ -79,9 +79,7 @@ struct UnscrambleGuess: Identifiable, Codable {
     }
     
     mutating func addLetter(_ character: Character) {
-        if letters.count < 7 && !isComplete {
-            letters.append(UnscrambleLetter(character))
-        }
+        letters.append(UnscrambleLetter(character))
     }
     
     mutating func removeLastLetter() {

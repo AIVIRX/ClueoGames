@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ExactoGameView: View {
+    @Environment(\.dismiss) private var dismiss
     private let seed: String
     private let difficulty: ExactoDifficulty
     @StateObject private var viewModel: ExactoViewModel
@@ -57,7 +58,7 @@ struct ExactoGameView: View {
         }
         .onChange(of: viewModel.isSolved) { _, solved in
             if solved {
-                markCompletedForToday()
+                CompletionService.shared.markCompleted(gameType: .exacto, date: completionDate())
                 showCompletion = true
                 onComplete?()
             }
@@ -128,10 +129,14 @@ struct ExactoGameView: View {
         guard let leftIdx = selectedLeftIndex, let rightIdx = selectedRightIndex, leftIdx != rightIdx else { return }
         let a = viewModel.availableNumbers[leftIdx]
         let b = viewModel.availableNumbers[rightIdx]
+        let wasSolvedBefore = viewModel.isSolved
         let _ = viewModel.attempt(.multiply, left: a, right: b)
         if viewModel.isSolved {
             // keep selection shown
         } else {
+            if !wasSolvedBefore {
+                HapticsManager.shared.trigger(.error)
+            }
             selectedLeftIndex = nil
             selectedRightIndex = nil
             stage = .pickFirstNumber
@@ -205,59 +210,34 @@ struct ExactoGameView: View {
     }
 
     // MARK: - Completion & Persistence
-    private func markCompletedForToday() {
-        let today = dailyString()
-        let key = "exacto_completed_\(today)"
-        var set: Set<ExactoDifficulty> = []
-        if let data = UserDefaults.standard.data(forKey: key),
-           let decoded = try? JSONDecoder().decode(Set<ExactoDifficulty>.self, from: data) {
-            set = decoded
-        }
-        set.insert(difficulty)
-        if let data = try? JSONEncoder().encode(set) {
-            UserDefaults.standard.set(data, forKey: key)
-        }
-    }
-    
-    private func dailyString() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: Date())
+    private func completionDate() -> Date {
+        // Past views pass a seed like "MMM d, yyyy". Try to parse that first.
+        let pretty = DateFormatter()
+        pretty.dateFormat = "MMM d, yyyy"
+        if let d = pretty.date(from: seed) { return d }
+        
+        // Fallback: try ISO format
+        let iso = DateFormatter()
+        iso.dateFormat = "yyyy-MM-dd"
+        if let d = iso.date(from: seed) { return d }
+        
+        // Last resort: today
+        return Date()
     }
 
     private var completionSheet: some View {
-        NavigationStack {
-            VStack(spacing: 24) {
-                Spacer()
-                ZStack {
-                    Circle()
-                        .fill(Color.green.opacity(0.2))
-                        .frame(width: 120, height: 120)
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 50, weight: .bold))
-                        .foregroundColor(.green)
-                }
-                Text("Exacto Complete!")
-                    .font(.title)
-                    .fontWeight(.bold)
-                Text("Target: \(viewModel.puzzle.target)")
-                    .font(.title3)
-                    .foregroundColor(.secondary)
-                Button(action: { showCompletion = false }) {
-                    Text("Done")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(12)
-                }
-                Spacer()
-            }
-            .padding()
-            .navigationTitle("Great Job!")
-            .navigationBarTitleDisplayMode(.inline)
-        }
+        GameCompletionView(
+            gameType: "Exacto",
+            isWon: true,
+            primaryInfo: "Target Hit!",
+            secondaryInfo: "Target: \(viewModel.puzzle.target)",
+            additionalChips: [
+                CompletionChip(title: "Target", value: "\(viewModel.puzzle.target)", icon: "target"),
+                CompletionChip(title: "Difficulty", value: difficulty.rawValue.capitalized, icon: "bolt.fill")
+            ],
+            onDone: { showCompletion = false },
+            onBackToList: { dismiss() }
+        )
     }
 }
 

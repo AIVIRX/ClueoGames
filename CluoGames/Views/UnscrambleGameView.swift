@@ -10,10 +10,18 @@ import SwiftUI
 struct UnscrambleGameView: View {
     @StateObject private var viewModel: UnscrambleViewModel
     @Environment(\.dismiss) private var dismiss
-    @State private var showSettings = false
+    private let seed: String?
     
-    init(game: UnscrambleGame? = nil) {
-        _viewModel = StateObject(wrappedValue: UnscrambleViewModel(game: game))
+    init(game: UnscrambleGame? = nil, seed: String? = nil) {
+        self.seed = seed
+        if let game = game {
+            _viewModel = StateObject(wrappedValue: UnscrambleViewModel(game: game))
+        } else if let seed = seed {
+            let generated = UnscrambleGenerator.generateGame(seed: seed)
+            _viewModel = StateObject(wrappedValue: UnscrambleViewModel(game: generated))
+        } else {
+            _viewModel = StateObject(wrappedValue: UnscrambleViewModel(game: nil))
+        }
     }
     
     var body: some View {
@@ -29,12 +37,6 @@ struct UnscrambleGameView: View {
             .navigationTitle("Unscramble")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showSettings = true }) {
-                        Image(systemName: "gearshape")
-                            .font(.system(size: 18, weight: .medium))
-                    }
-                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
                         Button("Reveal word") {
@@ -57,11 +59,13 @@ struct UnscrambleGameView: View {
                     isWon: viewModel.isGameWon,
                     targetWord: viewModel.targetWord,
                     guesses: viewModel.game.guesses,
-                    onDismiss: { dismiss() }
+                    onDismiss: { 
+                        if viewModel.isGameWon {
+                            CompletionService.shared.markCompleted(gameType: .unscramble, date: viewModel.game.date)
+                        }
+                        dismiss()
+                    }
                 )
-            }
-            .sheet(isPresented: $showSettings) {
-                UnscrambleSettingsView()
             }
         }
     }
@@ -101,7 +105,7 @@ struct UnscrambleGameView: View {
         VStack(spacing: 8) {
             // Previous guesses
             ForEach(viewModel.game.guesses) { guess in
-                GuessRow(guess: guess)
+                GuessRow(guess: guess, targetLength: viewModel.targetWord.count)
             }
             
             // Current guess
@@ -154,6 +158,7 @@ struct UnscrambleGameView: View {
                             backgroundColor: viewModel.canSubmitGuess ? .blue : .gray.opacity(0.2)
                         )
                         .frame(width: 60)
+                        .keyboardShortcut(.return, modifiers: [])
                     }
                 }
             }
@@ -183,20 +188,21 @@ struct UnscrambleGameView: View {
 
 struct GuessRow: View {
     let guess: UnscrambleGuess
+    let targetLength: Int
     
     var body: some View {
         HStack(spacing: 4) {
-            ForEach(Array(guess.letters.enumerated()), id: \.offset) { index, letter in
-                LetterBox(
-                    letter: letter.character,
-                    state: letter.state,
-                    isAnimating: false
-                )
-            }
-            
-            // Fill remaining spaces
-            ForEach(guess.letters.count..<7, id: \.self) { _ in
-                LetterBox(letter: " ", state: .empty, isAnimating: false)
+            ForEach(0..<targetLength, id: \.self) { index in
+                if index < guess.letters.count {
+                    let letter = guess.letters[index]
+                    LetterBox(
+                        letter: letter.character,
+                        state: letter.state,
+                        isAnimating: false
+                    )
+                } else {
+                    LetterBox(letter: " ", state: .empty, isAnimating: false)
+                }
             }
         }
     }
@@ -208,7 +214,7 @@ struct CurrentGuessRow: View {
     
     var body: some View {
         HStack(spacing: 4) {
-            ForEach(0..<7, id: \.self) { index in
+            ForEach(0..<targetLength, id: \.self) { index in
                 if index < guess.letters.count {
                     LetterBox(
                         letter: guess.letters[index].character,
@@ -305,75 +311,18 @@ struct UnscrambleResultView: View {
     let onDismiss: () -> Void
     
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 24) {
-                Image(systemName: isWon ? "checkmark.circle.fill" : "xmark.circle.fill")
-                    .font(.system(size: 60))
-                    .foregroundColor(isWon ? .green : .red)
-                
-                Text(isWon ? "Congratulations!" : "Game Over")
-                    .font(.title)
-                    .fontWeight(.bold)
-                
-                Text("The word was: \(targetWord)")
-                    .font(.title2)
-                    .foregroundColor(.secondary)
-                
-                if isWon {
-                    Text("You solved it in \(guesses.count) guess\(guesses.count == 1 ? "" : "es")!")
-                        .font(.headline)
-                        .foregroundColor(.green)
-                }
-                
-                Spacer()
-                
-                Button("Play Again") {
-                    onDismiss()
-                }
-                .font(.headline)
-                .foregroundColor(.white)
-                .padding()
-                .background(Color.blue)
-                .cornerRadius(12)
-            }
-            .padding()
-            .navigationTitle("Result")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { onDismiss() }
-                }
-            }
-        }
-    }
-}
-
-struct UnscrambleSettingsView: View {
-    @Environment(\.dismiss) private var dismiss
-    
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 20) {
-                Text("Unscramble Settings")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                
-                Text("Settings coming soon!")
-                    .foregroundColor(.secondary)
-                
-                Spacer()
-            }
-            .padding()
-            .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                }
-            }
-        }
+        GameCompletionView(
+            gameType: "Unscramble",
+            isWon: isWon,
+            primaryInfo: isWon ? "Word Solved!" : "Game Over",
+            secondaryInfo: "The word was: \(targetWord)",
+            additionalChips: [
+                CompletionChip(title: "Guesses", value: "\(guesses.count)", icon: "number"),
+                CompletionChip(title: "Length", value: "\(targetWord.count)", icon: "textformat.size")
+            ],
+            onDone: { onDismiss() },
+            onBackToList: { onDismiss() }
+        )
     }
 }
 

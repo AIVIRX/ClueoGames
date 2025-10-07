@@ -50,10 +50,6 @@ struct ExactoModeSelectionView: View {
                     Image(systemName: "checkmark.circle.fill").foregroundColor(.green)
                 }
                 Text(title).font(.headline)
-                Spacer()
-                Text(ExactoGenerator.dailySeed())
-                    .font(.caption)
-                    .foregroundColor(.black.opacity(0.8))
             }
             .padding()
             .frame(maxWidth: .infinity)
