@@ -73,7 +73,3 @@ struct CustomPaywallView: View {
         }
     }
 }
-
-#Preview {
-    CustomPaywallView()
-}

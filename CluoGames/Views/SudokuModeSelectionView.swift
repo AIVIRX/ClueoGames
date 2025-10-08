@@ -165,8 +165,3 @@ struct DifficultyButton: View {
         return "\(difficulty.rawValue)-\(formatter.string(from: Date()))"
     }
 }
-
-#Preview {
-    SudokuModeSelectionView()
-}
-

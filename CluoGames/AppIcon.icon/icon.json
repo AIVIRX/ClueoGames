@@ -4,7 +4,7 @@
   },
   "groups" : [
     {
-      "blur-material" : 0.5,
+      "blur-material" : 0.99,
       "layers" : [
         {
           "image-name" : "Artboard 98.png",
@@ -24,7 +24,7 @@
       },
       "specular" : true,
       "translucency" : {
-        "enabled" : true,
+        "enabled" : false,
         "value" : 0.5
       }
     },

@@ -61,6 +61,7 @@ struct SettingsView: View {
     @State private var result: Result<MFMailComposeResult, Error>? = nil
 #endif
     @State private var isShowingMailView = false
+    @AppStorage("appearanceMode") private var appearanceMode: String = "auto"
 
     var body: some View {
         NavigationStack {
@@ -81,6 +82,16 @@ struct SettingsView: View {
                         }
                         .buttonStyle(.bordered)
                     }
+                }
+                
+                // Appearance Section
+                Section("Appearance") {
+                    Picker("Color Scheme", selection: $appearanceMode) {
+                        Text("Auto").tag("auto")
+                        Text("Light").tag("light")
+                        Text("Dark").tag("dark")
+                    }
+                    .pickerStyle(.menu)
                 }
                 
                 // Other Apps Section
@@ -213,9 +224,4 @@ struct SettingsView: View {
             }
         }
     }
-}
-
-
-#Preview {
-    SettingsView()
 }

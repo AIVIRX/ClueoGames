@@ -71,9 +71,3 @@ struct ExactoModeSelectionView: View {
         }
     }
 }
-
-#Preview {
-    NavigationStack { ExactoModeSelectionView() }
-}
-
-

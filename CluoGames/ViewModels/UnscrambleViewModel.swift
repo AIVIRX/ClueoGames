@@ -59,7 +59,7 @@ final class UnscrambleViewModel: ObservableObject {
         let guessWord = game.currentGuess.word
         
         // Check if it's the correct word
-        if guessWord == game.word {
+        if guessWord.lowercased() == game.word.lowercased() {
             handleCorrectGuess()
         } else {
             handleIncorrectGuess()
@@ -75,9 +75,15 @@ final class UnscrambleViewModel: ObservableObject {
     }
     
     func revealWord() {
-        // End the game and show the result
+        // Treat reveal as a correct completion
+        // Populate a final guess equal to the target word for consistent UI
+        let revealedGuess = UnscrambleGuess(word: game.word)
+        let analyzed = analyzeGuess(revealedGuess)
+        game.guesses.append(analyzed)
+        updateKeyboardStates(for: analyzed)
+        game.isSolved = true
         game.isGameOver = true
-        gameState = .lost
+        gameState = .won
         showResult = true
     }
     
@@ -127,8 +133,8 @@ final class UnscrambleViewModel: ObservableObject {
     
     private func analyzeGuess(_ guess: UnscrambleGuess) -> UnscrambleGuess {
         var analyzedGuess = guess
-        let guessWord = guess.word
-        let targetWord = game.word
+        let guessWord = guess.word.lowercased()
+        let targetWord = game.word.lowercased()
         
         // Create arrays to track which letters have been used
         var targetUsed = Array(repeating: false, count: targetWord.count)

@@ -59,6 +59,7 @@ struct ExactoGameView: View {
         .onChange(of: viewModel.isSolved) { _, solved in
             if solved {
                 CompletionService.shared.markCompleted(gameType: .exacto, date: completionDate())
+                markDifficultyCompleted()
                 showCompletion = true
                 onComplete?()
             }
@@ -225,6 +226,19 @@ struct ExactoGameView: View {
         return Date()
     }
 
+    private func markDifficultyCompleted() {
+        let key = "exacto_completed_\(ExactoGenerator.dailySeed())"
+        var set: Set<ExactoDifficulty> = []
+        if let data = UserDefaults.standard.data(forKey: key),
+           let decoded = try? JSONDecoder().decode(Set<ExactoDifficulty>.self, from: data) {
+            set = decoded
+        }
+        set.insert(difficulty)
+        if let data = try? JSONEncoder().encode(set) {
+            UserDefaults.standard.set(data, forKey: key)
+        }
+    }
+
     private var completionSheet: some View {
         GameCompletionView(
             gameType: "Exacto",
@@ -240,10 +254,3 @@ struct ExactoGameView: View {
         )
     }
 }
-
-#Preview {
-    NavigationStack { ExactoGameView() }
-}
-
-
-

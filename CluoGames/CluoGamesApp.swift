@@ -10,6 +10,7 @@ import RevenueCat
 
 @main
 struct CluoGamesApp: App {
+    @AppStorage("appearanceMode") private var appearanceMode: String = "auto"
     init() {
         // Configure RevenueCat via service
         PurchasesService.shared.configure(appUserID: nil, logLevel: .debug)
@@ -20,6 +21,7 @@ struct CluoGamesApp: App {
                 .onAppear {
                     setupApp()
                 }
+                .preferredColorScheme(colorSchemeFromSetting())
         }
     }
     
@@ -34,5 +36,13 @@ struct CluoGamesApp: App {
         
         // Schedule daily reminder (9 AM)
         NotificationService.shared.scheduleDailyReminder(at: 9, minute: 0)
+    }
+
+    private func colorSchemeFromSetting() -> ColorScheme? {
+        switch appearanceMode {
+        case "light": return .light
+        case "dark": return .dark
+        default: return nil // auto follows system
+        }
     }
 }

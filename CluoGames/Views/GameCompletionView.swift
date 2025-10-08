@@ -131,18 +131,3 @@ struct CompletionChip {
     let value: String
     let icon: String
 }
-
-#Preview {
-    GameCompletionView(
-        gameType: "Sudoku",
-        isWon: true,
-        primaryInfo: "Puzzle Complete!",
-        secondaryInfo: "Time: 5:23",
-        additionalChips: [
-            CompletionChip(title: "Time", value: "5:23", icon: "clock.fill"),
-            CompletionChip(title: "Difficulty", value: "Medium", icon: "bolt.fill")
-        ],
-        onDone: {},
-        onBackToList: {}
-    )
-}

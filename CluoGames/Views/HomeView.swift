@@ -9,10 +9,12 @@ import SwiftUI
 import StoreKit
 
 struct HomeView: View {
-    @StateObject private var viewModel = HomeViewModel()
     @StateObject private var purchases = PurchasesService.shared
     @State private var showingGame = false
     @State private var showPaywall = false
+    @State private var goPastSudoku = false
+    @State private var goPastUnscramble = false
+    @State private var goPastExacto = false
     
     var body: some View {
         NavigationStack {
@@ -35,12 +37,16 @@ struct HomeView: View {
                         )
                     }
                     
-                        NavigationLink {
-                            PastSudokuView()
-                        } label: {
-                            SmallActionButtonView(title: "Past Sudoku", systemImage: "archivebox.fill", color: .yellow)
+                    Button {
+                        if purchases.hasPremium {
+                            goPastSudoku = true
+                        } else {
+                            showPaywall = true
                         }
-                        .padding(.bottom)
+                    } label: {
+                        SmallActionButtonView(title: "Past Sudoku", systemImage: "archivebox.fill", color: .yellow)
+                    }
+                    .padding(.bottom)
                                         
                     NavigationLink {
                         UnscrambleGameView()
@@ -56,8 +62,12 @@ struct HomeView: View {
                         )
                     }
                     
-                    NavigationLink {
-                        PastUnscrambleView()
+                    Button {
+                        if purchases.hasPremium {
+                            goPastUnscramble = true
+                        } else {
+                            showPaywall = true
+                        }
                     } label: {
                         SmallActionButtonView(title: "Past Unscramble", systemImage: "archivebox.fill", color: .blue)
                     }
@@ -68,21 +78,25 @@ struct HomeView: View {
                     } label: {
                         GameHeroCard(
                             title: "Exacto",
-                            subtitle: "Use six numbers and multiplication to match the target",
+                            subtitle: "Use two numbers and multiplication to match the target",
                             dateText: "Today",
-                            icon: "equal",
+                            icon: "equal.circle.fill",
                             tint: Color(.systemPink),
                             isLocked: false,
                             height: 200
                         )
                     }
                     
-                        NavigationLink {
-                            PastExactoView()
-                        } label: {
-                            SmallActionButtonView(title: "Past Exacto", systemImage: "archivebox.fill", color: .pink)
+                    Button {
+                        if purchases.hasPremium {
+                            goPastExacto = true
+                        } else {
+                            showPaywall = true
                         }
-                        .padding(.bottom)
+                    } label: {
+                        SmallActionButtonView(title: "Past Exacto", systemImage: "archivebox.fill", color: .pink)
+                    }
+                    .padding(.bottom)
 
                     
                 }
@@ -92,10 +106,11 @@ struct HomeView: View {
             .navigationTitle("Games")
             .navigationBarTitleDisplayMode(.inline)
             .background(Color(.systemGroupedBackground))
+            .navigationDestination(isPresented: $goPastSudoku) { PastSudokuView() }
+            .navigationDestination(isPresented: $goPastUnscramble) { PastUnscrambleView() }
+            .navigationDestination(isPresented: $goPastExacto) { PastExactoView() }
         }
-        .fullScreenCover(isPresented: $showPaywall) {
-            CustomPaywallView()
-        }
+        .fullScreenCover(isPresented: $showPaywall) { CustomPaywallView() }
     }
     
     private var welcomeHeader: some View {

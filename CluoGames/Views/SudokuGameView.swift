@@ -34,19 +34,24 @@ struct SudokuGameView: View {
     @State private var timer: Timer?
     
     var body: some View {
-        ScrollView{
-            VStack(spacing: 20) {
+        GeometryReader { geometry in
+            VStack(spacing: 16) {
                 // Timer
                 timerView
                 
-                // Grid
+                // Grid - fixed size to prevent overlap
                 grid
+                    .frame(width: max(200, min(geometry.size.width - 32, 400)),
+                           height: max(200, min(geometry.size.width - 32, 400)))
+                    .frame(maxWidth: .infinity)
+                
                 
                 // Number Pad
                 numberPad
                     .disabled(isCompleted)
             }
-            .padding(3)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
             .navigationTitle("Sudoku")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -80,9 +85,8 @@ struct SudokuGameView: View {
     
     private var grid: some View {
         GeometryReader { geometry in
-            let availableWidth = geometry.size.width - 32 // 16 padding on each side
-            let maxSize: CGFloat = 450 // Maximum size for iPad/computer
-            let cellSize = min(availableWidth / 9, maxSize / 9)
+            let availableSize = min(geometry.size.width, geometry.size.height)
+            let cellSize = availableSize / 9
             
             VStack(spacing: 0) {
                 ForEach(0..<9, id: \.self) { r in
@@ -104,7 +108,6 @@ struct SudokuGameView: View {
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .frame(height: 400) // Give it a reasonable height
     }
     
     private var timerView: some View {
@@ -148,6 +151,7 @@ struct SudokuGameView: View {
             isCompleted = true
             stopTimer()
             CompletionService.shared.markCompleted(gameType: .sudoku, date: completionDate())
+            markDifficultyCompleted()
             onComplete?()
         }
     }
@@ -199,6 +203,22 @@ struct SudokuGameView: View {
         
         // Last resort
         return Date()
+    }
+
+    private func markDifficultyCompleted() {
+        // Use today's key consistent with mode selection view
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let todayKey = "sudoku_completed_\(formatter.string(from: Date()))"
+        var set: Set<SudokuDifficulty> = []
+        if let data = UserDefaults.standard.data(forKey: todayKey),
+           let decoded = try? JSONDecoder().decode(Set<SudokuDifficulty>.self, from: data) {
+            set = decoded
+        }
+        set.insert(difficulty)
+        if let data = try? JSONEncoder().encode(set) {
+            UserDefaults.standard.set(data, forKey: todayKey)
+        }
     }
     
     private func cell(_ r: Int, _ c: Int, size: CGFloat) -> some View {
@@ -442,10 +462,3 @@ struct SudokuGameView: View {
         )
     }
 }
-
-#Preview {
-    SudokuGameView(seed: "daily-2025-09-29", difficulty: .easy)
-}
-
-
-

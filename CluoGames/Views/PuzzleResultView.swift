@@ -212,23 +212,3 @@ struct ShareSheet: UIViewControllerRepresentable {
     
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
-
-// MARK: - Preview
-#Preview {
-    let samplePuzzle = ConnectionsPuzzle(
-        id: "preview",
-        date: Date(),
-        difficulty: .medium,
-        words: [],
-        groups: [],
-        title: "Daily Connections",
-        description: "Group the words into 4 categories of 4"
-    )
-    
-    PuzzleResultView(
-        puzzle: samplePuzzle,
-        timeToSolve: 180, // 3 minutes
-        mistakes: 1,
-        streak: 5
-    )
-}

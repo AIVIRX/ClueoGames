@@ -141,7 +141,7 @@ struct DailyGame: Identifiable {
 struct PastSudokuView: View {
     var body: some View {
         PastGamesListView(
-            gameTitle: "Past Sudoku",
+            gameTitle: "Sudoku",
             gameIcon: "square.grid.3x3.fill",
             gameColor: .yellow,
             gameType: .sudoku
@@ -152,7 +152,7 @@ struct PastSudokuView: View {
 struct PastExactoView: View {
     var body: some View {
         PastGamesListView(
-            gameTitle: "Past Exacto",
+            gameTitle: "Exacto",
             gameIcon: "equal.circle.fill",
             gameColor: .pink,
             gameType: .exacto
@@ -163,14 +163,10 @@ struct PastExactoView: View {
 struct PastUnscrambleView: View {
     var body: some View {
         PastGamesListView(
-            gameTitle: "Past Unscramble",
+            gameTitle: "Unscramble",
             gameIcon: "questionmark.circle.fill",
             gameColor: .blue,
             gameType: .unscramble
         )
     }
-}
-
-#Preview {
-    PastSudokuView()
 }

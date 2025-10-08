@@ -10,6 +10,7 @@
 		EC9FE17D2E8F4743000EC42F /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = EC9FE17C2E8F4743000EC42F /* RevenueCat */; };
 		EC9FE17F2E8F4743000EC42F /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = EC9FE17E2E8F4743000EC42F /* RevenueCatUI */; };
 		EC9FE1812E8F4790000EC42F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC9FE1802E8F4790000EC42F /* StoreKit.framework */; };
+		ECAF86642E95AE8600B70FF1 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = ECAF86632E95AE8600B70FF1 /* Localizable.xcstrings */; };
 		ECC5E90D2E8B04EB00AD3D06 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECC5E90C2E8B04EB00AD3D06 /* GameKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -17,6 +18,7 @@
 		EC4D511B2E88AF6900912B9A /* CluoGames.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CluoGames.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC4D516A2E88BC4600912B9A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		EC9FE1802E8F4790000EC42F /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		ECAF86632E95AE8600B70FF1 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		ECC5E90C2E8B04EB00AD3D06 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -46,6 +48,7 @@
 		EC4D51122E88AF6900912B9A = {
 			isa = PBXGroup;
 			children = (
+				ECAF86632E95AE8600B70FF1 /* Localizable.xcstrings */,
 				EC4D511D2E88AF6900912B9A /* CluoGames */,
 				EC4D51692E88BC4600912B9A /* Frameworks */,
 				EC4D511C2E88AF6900912B9A /* Products */,
@@ -118,6 +121,44 @@
 			knownRegions = (
 				en,
 				Base,
+				ar,
+				ca,
+				"zh-Hans",
+				"zh-Hant",
+				hr,
+				cs,
+				da,
+				nl,
+				fi,
+				fr,
+				"en-IN",
+				"en-AU",
+				"en-GB",
+				"fr-CA",
+				de,
+				el,
+				he,
+				hi,
+				hu,
+				id,
+				it,
+				ja,
+				ko,
+				ms,
+				uk,
+				tr,
+				pl,
+				th,
+				sv,
+				"es-US",
+				"es-419",
+				ru,
+				es,
+				"pt-PT",
+				"pt-BR",
+				vi,
+				sk,
+				ro,
 			);
 			mainGroup = EC4D51122E88AF6900912B9A;
 			minimizedProjectReferenceProxies = 1;
@@ -139,6 +180,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ECAF86642E95AE8600B70FF1 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -215,6 +257,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -272,6 +315,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -283,7 +327,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = CluoGames/CluoGames.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 67;
 				DEVELOPMENT_TEAM = 5C778DVBP3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -303,6 +347,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Maicol.CluoGames;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -319,7 +367,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = CluoGames/CluoGames.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 67;
 				DEVELOPMENT_TEAM = 5C778DVBP3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -339,6 +387,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Maicol.CluoGames;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;

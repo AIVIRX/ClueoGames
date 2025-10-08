@@ -59,11 +59,20 @@ struct UnscrambleGameView: View {
                     isWon: viewModel.isGameWon,
                     targetWord: viewModel.targetWord,
                     guesses: viewModel.game.guesses,
-                    onDismiss: { 
+                    onDone: {
                         if viewModel.isGameWon {
                             CompletionService.shared.markCompleted(gameType: .unscramble, date: viewModel.game.date)
                         }
-                        dismiss()
+                        withAnimation { viewModel.showResult = false }
+                    },
+                    onBackToList: {
+                        if viewModel.isGameWon {
+                            CompletionService.shared.markCompleted(gameType: .unscramble, date: viewModel.game.date)
+                        }
+                        withAnimation { viewModel.showResult = false }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
+                            dismiss()
+                        }
                     }
                 )
             }
@@ -308,7 +317,8 @@ struct UnscrambleResultView: View {
     let isWon: Bool
     let targetWord: String
     let guesses: [UnscrambleGuess]
-    let onDismiss: () -> Void
+    let onDone: () -> Void
+    let onBackToList: () -> Void
     
     var body: some View {
         GameCompletionView(
@@ -320,12 +330,9 @@ struct UnscrambleResultView: View {
                 CompletionChip(title: "Guesses", value: "\(guesses.count)", icon: "number"),
                 CompletionChip(title: "Length", value: "\(targetWord.count)", icon: "textformat.size")
             ],
-            onDone: { onDismiss() },
-            onBackToList: { onDismiss() }
+            onDone: { onDone() },
+            onBackToList: { onBackToList() }
         )
     }
 }
 
-#Preview {
-    UnscrambleGameView()
-}
