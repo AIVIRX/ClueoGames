@@ -47,3 +47,4 @@ Unlike single-game puzzle apps, CluoGames offers variety in one convenient packa
 
 **Category:** Games > Puzzle
 **Age Rating:** 4+ (No objectionable content)
+
