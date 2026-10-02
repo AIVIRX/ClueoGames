@@ -11,10 +11,17 @@ import RevenueCat
 @main
 struct CluoGamesApp: App {
     @AppStorage("appearanceMode") private var appearanceMode: String = "auto"
+
     init() {
-        // Configure RevenueCat via service
-        PurchasesService.shared.configure(appUserID: nil, logLevel: .debug)
+        #if DEBUG
+        let logLevel: LogLevel = .debug
+        #else
+        let logLevel: LogLevel = .warn
+        #endif
+
+        PurchasesService.shared.configure(appUserID: nil, logLevel: logLevel)
     }
+
     var body: some Scene {
         WindowGroup {
             MainTabView()
