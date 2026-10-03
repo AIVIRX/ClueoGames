@@ -2,6 +2,8 @@
 
 A SwiftUI iOS app featuring a fresh set of daily puzzles: Sudoku, Unscramble, and Exacto.
 
+Available on the App Store: [Clueo Games: Sudoku & Puzzles](https://apps.apple.com/us/app/clueo-games-sudoku-puzzles/id6753126169)
+
 ## Highlights
 
 - Three daily puzzle modes with multiple difficulty levels
