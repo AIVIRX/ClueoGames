@@ -51,12 +51,6 @@ CluoGames/
 | Unscramble | Solve the daily word by rearranging its letters. |
 | Exacto | Use the supplied numbers and multiplication to match a target. |
 
-## Notes for contributors
-
-- Keep generated build products and personal Xcode workspace state out of Git.
-- Configure RevenueCat products and entitlements in your own project environment before testing purchases.
-- App Store copy is maintained in `CluoGames/AppStoreDescription.md`.
-
 ## License
 
-This project is currently unlicensed. Contact the repository owner before reusing its code or assets.
+Copyright © 2026 Maicol Cabreja. All rights reserved. This repository is provided for portfolio and evaluation purposes only. No permission is granted to copy, modify, distribute, or use its code or assets without prior written permission.
