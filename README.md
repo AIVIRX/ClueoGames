@@ -1,4 +1,4 @@
-# CluoGames
+# ClueoGames
 
 A SwiftUI iOS app featuring a fresh set of daily puzzles: Sudoku, Unscramble, and Exacto.
 
@@ -8,7 +8,7 @@ A SwiftUI iOS app featuring a fresh set of daily puzzles: Sudoku, Unscramble, an
 - Deterministic puzzle generation for a consistent daily experience
 - Completion tracking and daily reminders
 - Light, dark, and system appearance options
-- Optional CluoGames+ subscription for ad-free play and past-puzzle access
+- Optional ClueoGames+ subscription for ad-free play and past-puzzle access
 
 ## Tech stack
 

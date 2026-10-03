@@ -1,10 +1,10 @@
-# CluoGames - Daily Puzzle Collection
+# ClueoGames - Daily Puzzle Collection
 
 ## App Store Description
 
 **Challenge your mind with three addictive daily puzzles in one beautiful app!**
 
-CluoGames brings together three classic puzzle games that will keep your brain sharp and entertained. Each day brings fresh challenges designed to test your logic, word skills, and mathematical thinking.
+ClueoGames brings together three classic puzzle games that will keep your brain sharp and entertained. Each day brings fresh challenges designed to test your logic, word skills, and mathematical thinking.
 
 ### 🧩 **Three Daily Puzzles:**
 
@@ -31,15 +31,15 @@ CluoGames brings together three classic puzzle games that will keep your brain s
 • Word game lovers and math puzzle fans
 • People who enjoy daily challenges
 
-### 💎 **CluoGames+ Premium:**
+### 💎 **ClueoGames+ Premium:**
 • Access to all past puzzles
 • Ad-free experience
 • Unlock the full potential of your daily puzzle routine
 
-### 🧠 **Why CluoGames?**
-Unlike single-game puzzle apps, CluoGames offers variety in one convenient package. Whether you're in the mood for numbers, words, or math, there's always a fresh challenge waiting. The daily format creates a healthy habit while the multiple difficulties ensure everyone can participate.
+### 🧠 **Why ClueoGames?**
+Unlike single-game puzzle apps, ClueoGames offers variety in one convenient package. Whether you're in the mood for numbers, words, or math, there's always a fresh challenge waiting. The daily format creates a healthy habit while the multiple difficulties ensure everyone can participate.
 
-**Download CluoGames today and start your daily puzzle journey!**
+**Download ClueoGames today and start your daily puzzle journey!**
 
 ---
 
@@ -47,4 +47,3 @@ Unlike single-game puzzle apps, CluoGames offers variety in one convenient packa
 
 **Category:** Games > Puzzle
 **Age Rating:** 4+ (No objectionable content)
-
